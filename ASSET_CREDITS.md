@@ -4,7 +4,7 @@ All images are locally bundled. Downloaded 12 October 2026. Images are illustrat
 
 ## Attribution and licenses
 
-When distributing the site, retain this file and expose the image attribution/license data in `public/images/credits.json` through a visible image credits link. Creative Commons photos remain available under their listed licenses; changes are limited to thumbnail sizing and display cropping. The application source is not relicensed by including these separate images.
+When distributing the site, retain this file and expose the image attribution/license data in `src/image-credits.json` through a visible image credits link. Creative Commons photos remain available under their listed licenses; changes are limited to thumbnail sizing and display cropping. The application source is not relicensed by including these separate images.
 
 ### hero-rajasthan.jpg
 

@@ -51,7 +51,7 @@ The production build is static and can be hosted by any static web host. `.opena
 - `src/components/Common.tsx`: shared branding, journey details, fare breakdown, stepper and footer.
 - `src/App.tsx`: in-memory flow, results, review, confirmation, and dialogs.
 - `src/styles.css`: responsive styling, focus states, motion preferences, and self-hosted Manrope.
-- `public/images/credits.json` and `ASSET_CREDITS.md`: image attribution. Retain licenses and attribution when redistributing the photos.
+- `src/image-credits.json` and `ASSET_CREDITS.md`: image attribution. Retain licenses and attribution when redistributing the photos.
 - `index.html` and `public/favicon.svg`: browser metadata and brand mark.
 
 ## Limitations and privacy

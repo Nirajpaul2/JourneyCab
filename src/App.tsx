@@ -42,7 +42,7 @@ import {
   Logo,
   Stepper,
 } from "./components/Common";
-import imageCredits from "../public/images/credits.json";
+import imageCredits from "./image-credits.json";
 type Stage = "home" | "results" | "review" | "confirmation";
 export default function App() {
   const [stage, setStage] = useState<Stage>("home");
