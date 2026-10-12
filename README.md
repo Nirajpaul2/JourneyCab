@@ -1,4 +1,4 @@
-# JourneyCab client demo
+# JourneyCab
 
 An original, responsive Indian cab-booking experience built with React 19, TypeScript, Vite, and Tailwind CSS 4. JourneyCab is a temporary brand. All interactions and fare calculations run in the browser.
 
@@ -7,7 +7,8 @@ An original, responsive Indian cab-booking experience built with React 19, TypeS
 Requires Node.js 22+ and npm.
 
 ```sh
-cd journeycab # when starting from the OneWayCab workspace
+git clone https://github.com/Nirajpaul2/JourneyCab.git
+cd JourneyCab
 npm ci
 npm run dev
 ```
