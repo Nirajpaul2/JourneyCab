@@ -1,0 +1,237 @@
+import {
+  ArrowUpRight,
+  Check,
+  ChevronDown,
+  Info,
+  Luggage,
+  Snowflake,
+  Users,
+} from "lucide-react";
+import { brand, fleet, packages } from "../config";
+import type { Category, Journey } from "../config";
+import { money, prettyDate, modeLabel } from "../booking";
+import type { Fare } from "../booking";
+export function Logo({
+  onClick,
+  light = false,
+}: {
+  onClick: () => void;
+  light?: boolean;
+}) {
+  return (
+    <button
+      className={`logo ${light ? "light" : ""}`}
+      onClick={onClick}
+      aria-label={`${brand.name} home`}
+    >
+      <span className="brand-symbol">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path
+            d="m8 24 8-17 8 17M11 18h10"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path d="M16 11v3m0 8v3" stroke="#fff" strokeWidth="1.5" />
+        </svg>
+      </span>
+      <span>
+        {brand.wordmark[0]}
+        <span className="logo-light">{brand.wordmark[1]}</span>
+        <i />
+      </span>
+    </button>
+  );
+}
+export function SectionHeading({
+  eyebrow,
+  title,
+  description,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  action?: { label: string; onClick: () => void };
+}) {
+  return (
+    <div className="section-heading">
+      <div>
+        <span className="eyebrow">{eyebrow}</span>
+        <h2>{title}</h2>
+        {description && <p>{description}</p>}
+      </div>
+      {action && (
+        <button className="text-button" onClick={action.onClick}>
+          {action.label}
+          <ArrowUpRight size={18} />
+        </button>
+      )}
+    </div>
+  );
+}
+export function Amenities({ category }: { category: Category }) {
+  const c = fleet.find((c) => c.id === category)!;
+  return (
+    <div className="amenities">
+      <span>
+        <Users size={15} />
+        {c.seats} seats
+      </span>
+      <span>
+        <Luggage size={15} />
+        {c.bags} {c.bags === 1 ? "bag" : "bags"}
+      </span>
+      <span>
+        <Snowflake size={15} />
+        AC
+      </span>
+    </div>
+  );
+}
+export function FareBreakdown({
+  fare,
+  expanded = false,
+}: {
+  fare: Fare;
+  expanded?: boolean;
+}) {
+  return (
+    <details className="fare-breakdown" open={expanded || undefined}>
+      <summary>
+        Fare breakdown <ChevronDown size={16} />
+      </summary>
+      <dl>
+        <div>
+          <dt>Base fare</dt>
+          <dd>{money(fare.base)}</dd>
+        </div>
+        <div>
+          <dt>Sample tax (5%)</dt>
+          <dd>{money(fare.tax)}</dd>
+        </div>
+        <div>
+          <dt>Toll estimate</dt>
+          <dd>{money(fare.toll)}</dd>
+        </div>
+        <div>
+          <dt>Driver allowance</dt>
+          <dd>{money(fare.driver)}</dd>
+        </div>
+        <div className="fare-total">
+          <dt>Estimated total</dt>
+          <dd>{money(fare.total)}</dd>
+        </div>
+      </dl>
+    </details>
+  );
+}
+export function JourneyDetails({ journey }: { journey: Journey }) {
+  return (
+    <div className="journey-details">
+      <div className="route-line">
+        <span className="route-dot" />
+        <div>
+          <small>{journey.mode === "local" ? "Rental city" : "Pickup"}</small>
+          <strong>{journey.from}</strong>
+        </div>
+      </div>
+      {journey.mode !== "local" && (
+        <div className="route-line">
+          <span className="route-dot end" />
+          <div>
+            <small>Destination</small>
+            <strong>{journey.to}</strong>
+          </div>
+        </div>
+      )}
+      <div className="trip-meta">
+        <span>{modeLabel(journey.mode)}</span>
+        <span>
+          {prettyDate(journey.date)} · {journey.time} IST
+        </span>
+        {journey.mode === "roundtrip" && (
+          <span>Return: {prettyDate(journey.returnDate)}</span>
+        )}
+        {journey.mode === "local" && (
+          <span>{packages.find((p) => p.id === journey.package)?.label}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+export function DemoNotice() {
+  return (
+    <div className="demo-notice">
+      <Info size={16} />
+      <span>
+        Client demo · All fares are illustrative. No real bookings or payments.
+      </span>
+    </div>
+  );
+}
+export function Stepper({ step }: { step: number }) {
+  return (
+    <ol className="stepper" aria-label="Booking progress">
+      {["Your journey", "Choose a cab", "Trip review", "Confirmation"].map(
+        (s, i) => (
+          <li
+            key={s}
+            className={i <= step ? "done" : ""}
+            aria-current={i === step ? "step" : undefined}
+          >
+            <span>{i < step ? <Check size={14} /> : i + 1}</span>
+            <em>{s}</em>
+          </li>
+        ),
+      )}
+    </ol>
+  );
+}
+export function Footer({
+  navigate,
+  onBook,
+}: {
+  navigate: (id: string) => void;
+  onBook: () => void;
+}) {
+  return (
+    <footer>
+      <div className="container footer-top">
+        <div className="footer-brand">
+          <Logo onClick={onBook} light />
+          <p>
+            A new city. A familiar comfort.
+            <br />
+            Let’s make the journey part of the story.
+          </p>
+          <span className="footer-tagline">{brand.tagline}</span>
+        </div>
+        <div>
+          <h3>Explore JourneyCab</h3>
+          <button onClick={() => navigate("services")}>Our services</button>
+          <button onClick={() => navigate("routes")}>Popular routes</button>
+          <button onClick={() => navigate("fleet")}>Our fleet</button>
+          <button onClick={() => navigate("faqs")}>
+            FAQs & draft policies
+          </button>
+        </div>
+        <div>
+          <h3>A few places to begin</h3>
+          <p>Mumbai · Pune · Delhi · Jaipur</p>
+          <p>Ahmedabad · Vadodara</p>
+          <p>Bengaluru · Mysuru · Chennai</p>
+          <p>Puducherry · Hyderabad · Vijayawada</p>
+        </div>
+      </div>
+      <div className="container footer-bottom">
+        <span>
+          © {new Date().getFullYear()} JourneyCab. A concept for the road ahead.
+        </span>
+        <span>Demonstration website · No cab has been reserved.</span>
+      </div>
+    </footer>
+  );
+}
