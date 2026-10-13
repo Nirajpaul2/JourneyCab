@@ -14,15 +14,26 @@ node scripts/docker-local.mjs exec -T app node -e \
 
 trap 'unset staff_password staff_password_again' EXIT
 read -r -p 'Staff email: ' staff_email
-read -r -s -p 'New password (14–128 characters): ' staff_password
-printf '\n'
-read -r -s -p 'Confirm password: ' staff_password_again
-printf '\n'
-
-if [[ "$staff_password" != "$staff_password_again" ]]; then
-  echo "Passwords do not match. No account was created." >&2
-  exit 1
-fi
+while true; do
+  read -r -s -p 'New password (14–128 characters; typing is hidden): ' staff_password
+  printf '\n'
+  # Match the server's JavaScript string-length validation, including Unicode.
+  # Read through stdin so the password never appears in process arguments.
+  if ! printf '%s' "$staff_password" | node --input-type=module -e \
+    'import { readFileSync } from "node:fs"; const password = readFileSync(0, "utf8"); process.exit(password.length >= 14 && password.length <= 128 ? 0 : 1);'; then
+    echo "Password must be 14–128 characters. Please try again; no account has been created." >&2
+    unset staff_password
+    continue
+  fi
+  read -r -s -p 'Confirm password: ' staff_password_again
+  printf '\n'
+  if [[ "$staff_password" != "$staff_password_again" ]]; then
+    echo "Passwords do not match. Please try again; no account has been created." >&2
+    unset staff_password staff_password_again
+    continue
+  fi
+  break
+done
 
 # The password travels only on stdin. The server validates it, hashes it with
 # scrypt, and refuses duplicate accounts; this command never resets passwords.
