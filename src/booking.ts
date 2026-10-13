@@ -1,4 +1,12 @@
-import { cities, fareRules, fleet, packages, routes } from "./config";
+import {
+  cities,
+  defaultRoute,
+  fareRules,
+  fleet,
+  packages,
+  routes,
+  serviceArea,
+} from "./config";
 import type { Category, Journey, Passenger } from "./config";
 export const money = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -24,8 +32,8 @@ export function indiaDate(offset = 0, now = new Date()) {
 }
 export const initialJourney = (): Journey => ({
   mode: "oneway",
-  from: "Mumbai",
-  to: "Pune",
+  from: defaultRoute.from,
+  to: defaultRoute.to,
   date: indiaDate(1),
   time: "09:00",
   returnDate: indiaDate(3),
@@ -41,10 +49,10 @@ export const emptyPassenger = (): Passenger => ({
 export function validateJourney(j: Journey, now = new Date()) {
   const errors: Record<string, string> = {};
   if (!cities.some((c) => c.name === j.from))
-    errors.from = "Choose a pickup city from the list.";
+    errors.from = `Choose a pickup city in ${serviceArea.state} from the list.`;
   if (j.mode !== "local") {
     if (!cities.some((c) => c.name === j.to))
-      errors.to = "Choose a destination from the list.";
+      errors.to = `Choose a destination in ${serviceArea.state} from the list.`;
     else if (j.from === j.to)
       errors.to = "Choose a different destination city.";
   }
@@ -94,9 +102,18 @@ export const tripDays = (j: Journey) =>
       )
     : 1;
 export function calculateFare(j: Journey, category: Category) {
-  const cab = fleet.find((c) => c.id === category)!;
+  // Enforce coverage in the estimator as well as in the form.
+  if (!cities.some((city) => city.name === j.from)) return null;
+  if (
+    j.mode !== "local" &&
+    (!cities.some((city) => city.name === j.to) || j.from === j.to)
+  )
+    return null;
+  const cab = fleet.find((c) => c.id === category);
+  if (!cab) return null;
   const route = findRoute(j);
-  const pack = packages.find((p) => p.id === j.package)!;
+  const pack = packages.find((p) => p.id === j.package);
+  if (!pack) return null;
   if (j.mode !== "local" && !route) return null;
   const days = tripDays(j);
   const km =

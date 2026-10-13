@@ -1,75 +1,66 @@
 [
   {
-    "filename": "hero-rajasthan.jpg",
-    "title": "Amer Fort, Jaipur, Rajasthan",
-    "creator": "Naveen Naidu",
-    "source": "https://unsplash.com/photos/a-castle-on-top-of-a-hill-next-to-a-body-of-water-duah6hFREfA",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license",
-    "changes": "Downloaded as a 1600px JPEG; image displayed with responsive cropping."
-  },
-  {
-    "filename": "hero-ghats.jpg",
-    "title": "Western Ghats at sunrise, Meesapulimala",
-    "creator": "Rajesh KP",
-    "source": "https://unsplash.com/photos/a-view-of-a-mountain-range-at-sunset-SNg0df76imk",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license",
-    "changes": "Downloaded as a 1600px JPEG; image displayed with responsive cropping."
-  },
-  {
-    "filename": "route-jaipur.jpg",
-    "title": "Hawa mahal front look.jpg",
-    "creator": "Mohammed aquib",
-    "source": "https://commons.wikimedia.org/wiki/File:Hawa_mahal_front_look.jpg",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
-  },
-  {
-    "filename": "route-pune.jpg",
-    "title": "Shaniwar Wada Front View-Pune-Maharashtra-N-MH-M64.jpg",
-    "creator": "Subhodeep Mukherjee",
-    "source": "https://commons.wikimedia.org/wiki/File:Shaniwar_Wada_Front_View-Pune-Maharashtra-N-MH-M64.jpg",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
-  },
-  {
-    "filename": "route-vadodara.jpg",
-    "title": "Laxmi Vilas Palace - Vadodara.jpg",
-    "creator": "Emmanuel DYAN",
-    "source": "https://commons.wikimedia.org/wiki/File:Laxmi_Vilas_Palace_-_Vadodara.jpg",
+    "filename": "hero-bihar.jpg",
+    "title": "Vishwa Shanti Stupa, Rajgir",
+    "creator": "Chandan Singh from India",
+    "source": "https://commons.wikimedia.org/wiki/File:Vishwa_Shanti_Stupa,_Rajgir_(5601083143).jpg",
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
   },
   {
-    "filename": "route-mysuru.jpg",
-    "title": "Mysore palace panorama (6).jpg",
-    "creator": "Ssriram mt",
-    "source": "https://commons.wikimedia.org/wiki/File:Mysore_palace_panorama_(6).jpg",
-    "license": "CC BY 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
-  },
-  {
-    "filename": "route-puducherry.jpg",
-    "title": "Rock Beach, in Pondicherry 06.jpg",
-    "creator": "Pinakpani",
-    "source": "https://commons.wikimedia.org/wiki/File:Rock_Beach,_in_Pondicherry_06.jpg",
+    "filename": "route-gaya.jpg",
+    "title": "Vishnupad Temple, Gaya",
+    "creator": "Surajkumar12111",
+    "source": "https://commons.wikimedia.org/wiki/File:Vishnupad_temple_gaya_bihar.jpg",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
   },
   {
-    "filename": "route-vijayawada.jpg",
-    "title": "Indrakeeladri and Prakasam Barrage.jpg",
-    "creator": "iMahesh",
-    "source": "https://commons.wikimedia.org/wiki/File:Indrakeeladri_and_Prakasam_Barrage.jpg",
+    "filename": "route-bodh-gaya.jpg",
+    "title": "Mahabodhi Temple, Bodh Gaya",
+    "creator": "Rohit Sharma",
+    "source": "https://commons.wikimedia.org/wiki/File:Mahabodhi_temple_complex,_Bodhgaya_16.jpg",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "changes": "Wikimedia 800px thumbnail (may be supplied as 960px); responsive display cropping only."
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
+  },
+  {
+    "filename": "route-rajgir.jpg",
+    "title": "Vishwa Shanti Stupa plaza, Rajgir",
+    "creator": "Pratik10pathak",
+    "source": "https://commons.wikimedia.org/wiki/File:Vishwa_shanti_stupa_at_Rajgir_Bihar.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
+  },
+  {
+    "filename": "route-muzaffarpur.jpg",
+    "title": "Dariyapur Shiv Mandir, Kanti, Muzaffarpur district",
+    "creator": "Dariyapurshivmandirkanti",
+    "source": "https://commons.wikimedia.org/wiki/File:Front_Entrance_of_Dariyapur_Shiv_Mandir_Kanti_at_Sunset,_Muzaffarpur,_Bihar.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
+  },
+  {
+    "filename": "route-darbhanga.jpg",
+    "title": "Darbhanga Raj palace",
+    "creator": "RANJEET KUMAR",
+    "source": "https://commons.wikimedia.org/wiki/File:Darbhanga_Raj_Kila.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
+  },
+  {
+    "filename": "route-bhagalpur.jpg",
+    "title": "Vikramshila Setu across the Ganges, Bhagalpur",
+    "creator": "Aquib Haque",
+    "source": "https://commons.wikimedia.org/wiki/File:VikarmShila_Bridge_(_Bhagalpur_).jpg",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/Template:PD-self",
+    "changes": "Downloaded Wikimedia thumbnail; responsive display cropping only."
   },
   {
     "filename": "car-hatchback.jpg",

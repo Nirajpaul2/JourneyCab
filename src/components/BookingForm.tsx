@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowRightLeft,
@@ -11,7 +11,7 @@ import {
   Search,
 } from "lucide-react";
 import type { Journey, TripMode } from "../config";
-import { cities, packages } from "../config";
+import { cities, defaultRoute, packages, serviceArea } from "../config";
 import { indiaDate, validateJourney } from "../booking";
 
 function CitySelect({
@@ -34,6 +34,17 @@ function CitySelect({
   const matches = cities.filter((c) =>
     `${c.name} ${c.state}`.toLowerCase().includes(query.toLowerCase()),
   );
+  const listRef = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const option = list?.children[active] as HTMLElement | undefined;
+    if (!open || !list || !option) return;
+    const top = option.offsetTop;
+    const bottom = top + option.offsetHeight;
+    if (top < list.scrollTop) list.scrollTop = top;
+    else if (bottom > list.scrollTop + list.clientHeight)
+      list.scrollTop = bottom - list.clientHeight;
+  }, [active, open, query]);
   const choose = (name: string) => {
     onChange(name);
     setQuery("");
@@ -82,7 +93,9 @@ function CitySelect({
             if (e.key === "ArrowDown") {
               e.preventDefault();
               setOpen(true);
-              setActive((a) => Math.min(a + 1, matches.length - 1));
+              setActive((a) =>
+                Math.max(0, Math.min(a + 1, matches.length - 1)),
+              );
             }
             if (e.key === "ArrowUp") {
               e.preventDefault();
@@ -98,6 +111,7 @@ function CitySelect({
       </div>
       {open && (
         <ul
+          ref={listRef}
           id={`${id}-options`}
           role="listbox"
           aria-label={`${label} cities`}
@@ -123,7 +137,8 @@ function CitySelect({
           ))}
           {!matches.length && (
             <li className="no-city">
-              No matching cities. Try Mumbai or Delhi.
+              No matching Bihar cities. Try {defaultRoute.from} or{" "}
+              {defaultRoute.to}.
             </li>
           )}
         </ul>
@@ -191,7 +206,7 @@ export default function BookingForm({
           ))}
         </div>
         <span className="booking-note">
-          <span className="green-dot" /> A ride for every kind of plan
+          <span className="green-dot" /> {serviceArea.notice}
         </span>
       </div>
       <div
@@ -321,8 +336,8 @@ export default function BookingForm({
         </button>
       )}
       <div className="booking-foot">
-        <span>Good journeys start with a little planning.</span>
-        <span>Illustrative fares. No payment required.</span>
+        <span>A little planning. A lot to look forward to.</span>
+        <span>Bihar only · Illustrative fares. No payment required.</span>
       </div>
     </form>
   );

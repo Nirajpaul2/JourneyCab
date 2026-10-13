@@ -1,6 +1,6 @@
 # JourneyCab
 
-An original, responsive Indian cab-booking experience built with React 19, TypeScript, Vite, and Tailwind CSS 4. JourneyCab is a temporary brand. All interactions and fare calculations run in the browser.
+An original, responsive Bihar-only cab-booking experience built with React 19, TypeScript, Vite, and Tailwind CSS 4. JourneyCab is a temporary brand. All interactions and fare calculations run in the browser.
 
 ## Run locally
 
@@ -23,21 +23,30 @@ npm run preview  # serve the production bundle locally
 
 The production build is static and can be hosted by any static web host. `.openai/hosting.json` holds the private Sites deployment identity. No API keys or environment variables are needed.
 
+## Bihar-only service area
+
+All pickup and destination selectors are restricted to Bihar. The current demo catalog is **Patna, Gaya, Bodh Gaya, Rajgir, Nalanda, Muzaffarpur, Darbhanga, Bhagalpur, Purnia, Begusarai, Hajipur and Arrah**. Interstate journeys are not available. Both validation and fare calculation reject out-of-state pickup/destination values, including out-of-state local rentals.
+
+Featured intercity routes are **Patna → Gaya, Bodh Gaya, Rajgir, Muzaffarpur, Darbhanga and Bhagalpur**, plus all reverse journeys. Other listed-city pairs intentionally have an empty-results state until their sample route data is added. All 12 cities support both local rental packages. Distances, travel times and tolls are illustrative and require provider confirmation.
+
+The Bihar Tourism [destination directory](https://tourism.bihar.gov.in/in/en/home/destinations) and [Gaya district page](https://gaya.nic.in/places-of-interest/) informed destination context. Image sources and licenses are recorded separately in `ASSET_CREDITS.md`.
+
 ## A short client walkthrough
 
 1. Start on the homepage. Introduce the original ivory, navy and saffron visual design, the three trip modes, the destination cards, fleet, sample stories and FAQs. Mention that JourneyCab is a temporary brand.
-2. Leave **Mumbai → Pune**, tomorrow at **09:00 IST**, and choose **Search Cabs**. Change price sorting, inspect the **Sedan**, and expand its fare breakdown. The one-way sedan estimate is **₹2,368**: base ₹1,950 + sample tax ₹98 + toll estimate ₹320.
+2. Leave **Patna → Gaya**, tomorrow at **09:00 IST**, and choose **Search Cabs**. Change price sorting, inspect the **Sedan**, and expand its fare breakdown. The one-way sedan estimate is **₹1,465**: base ₹1,300 + sample tax ₹65 + toll estimate ₹100.
 3. Choose **Select Cab**. Enter sample details: **Alex Kumar**, **9876543210**, optional **alex@example.com**, pickup **12 Example Road, near Central Park**, drop **42 Sample Avenue, near City Museum**. Go back to cab options and select again to show that the details stay intact.
 4. Choose **Confirm Demo Booking**. Point out the generated reference and the explicit message: **“Demo booking only. No cab has been reserved.”** Use **Start a New Booking** to clear the sample details.
-5. Try **Round Trip** with a return date two days after departure. For the default route, the sedan estimate is **₹11,823**, based on three inclusive calendar days, the 250 km/day minimum, driver allowance, sample tax and return toll estimate.
-6. Try **Local** in Mumbai, select **8 hours / 80 km**, and choose Sedan. The estimate is **₹2,728**. Only the pickup address is required for a local rental.
+5. Try **Round Trip** with a return date two days after departure. For the default route, the sedan estimate is **₹11,383**, based on three inclusive calendar days, the 250 km/day minimum, driver allowance, sample tax and return toll estimate.
+6. Try **Local** in Patna, select **8 hours / 80 km**, and choose Sedan. The estimate is **₹2,728**. Only the pickup address is required for a local rental.
 7. On a phone-sized window, demonstrate the compact menu, booking-first layout, route selection, FAQ accordion and the same complete booking journey.
 
 ## Edge cases for a demonstration
 
+- Type an out-of-state city such as Ranchi: no city option appears, and search is blocked.
 - Choose the same pickup/destination city: the form shows an inline validation message.
 - Pick a past departure, or a return date before departure: the form blocks the search.
-- Choose Mumbai → Jaipur: there is an intentional empty-results view, with a working action to try Mumbai → Pune. Only the six featured intercity pairs and their reverses have mock fares.
+- Choose Patna → Nalanda: there is an intentional empty-results view, with a working action to try Patna → Gaya. Only the six featured intercity pairs and their reverses have mock fares.
 - Filter **Hatchback** and **6 passengers**: an empty filter state offers **Clear filters**.
 - Open `/?scenario=error`, then search: a simulated error appears once. **Try again** recovers without losing the journey.
 - Search loading is intentionally shown for 650 ms. There is no external search request.
@@ -45,7 +54,7 @@ The production build is static and can be hosted by any static web host. `.opena
 
 ## Editing the demo
 
-- `src/config.ts`: brand name/wordmark, cities, routes, fleet, rental packages, category rates, tax/driver/minimum-distance rules, FAQs, and draft policies.
+- `src/config.ts`: brand name/wordmark, Bihar coverage and cities, routes, fleet, rental packages, category rates, tax/driver/minimum-distance rules, FAQs, and draft policies.
 - `src/booking.ts`: deterministic estimates and validation. Keep tax/policy labels aligned if changing the pricing model.
 - `src/components/BookingForm.tsx`: trip modes and keyboard-accessible searchable city controls.
 - `src/components/Home.tsx`: homepage sections and route-prefill actions.
@@ -59,7 +68,7 @@ The production build is static and can be hosted by any static web host. `.opena
 
 - No cab inventory, reservations, payments, driver assignment, accounts, emails, SMS, analytics or external booking connections exist.
 - Passenger details are held in React memory only. They are never put in URLs, localStorage, sessionStorage, cookies, or submitted to a service. Refreshing or starting a new booking clears them. Use fictional information for demonstrations.
-- Only the six featured intercity routes and their reverses are supported; local rentals work in all 12 listed cities.
+- Only the six featured intercity routes and their reverses are supported; local rentals work in all 12 listed Bihar cities.
 - All prices, distances, durations, capacities, sample tax and policies are illustrative, requiring client/provider validation. Daily minimums include both departure and return dates. Return pickup times would be agreed with a real provider.
 - Local package limits apply to both time and distance. Parking, local tolls, extra stops, overtime and additional kilometres are excluded. Vehicle photos and models represent categories, not live availability.
 - Sample stories are explicitly fictional; no verified ratings, customer counts or operational guarantees are claimed.

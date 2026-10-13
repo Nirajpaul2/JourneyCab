@@ -18,7 +18,7 @@ import {
   Navigation,
 } from "lucide-react";
 import type { Journey, TripMode } from "../config";
-import { faqs, fleet, policies, routes } from "../config";
+import { faqs, fleet, policies, routes, serviceArea } from "../config";
 import { calculateFare, money } from "../booking";
 import BookingForm from "./BookingForm";
 import { Amenities, SectionHeading } from "./Common";
@@ -64,7 +64,8 @@ export default function Home({
       <section className="hero container" aria-labelledby="hero-title">
         <div className="hero-copy">
           <span className="eyebrow">
-            <span className="eyebrow-line" /> LESS PLANNING. MORE GOING.
+            <span className="eyebrow-line" /> BIHAR, ONE COMFORTABLE RIDE AT A
+            TIME.
           </span>
           <h1 id="hero-title">
             Your next city
@@ -83,7 +84,7 @@ export default function Home({
             </span>
           </h1>
           <p>
-            Plan your journey, compare cabs,
+            Travel within Bihar, compare cabs,
             <br className="desktop-break" /> and see your fare upfront.
           </p>
           <div className="hero-chips">
@@ -99,8 +100,8 @@ export default function Home({
         </div>
         <div className="hero-visual">
           <img
-            src="/images/hero-rajasthan.jpg"
-            alt="Warm sandstone architecture of Amer Fort in Jaipur, Rajasthan"
+            src={`/images/${serviceArea.heroImage}.jpg`}
+            alt={serviceArea.heroAlt}
             fetchPriority="high"
           />
           <div className="hero-image-shade" />
@@ -113,7 +114,7 @@ export default function Home({
           </div>
           <div className="hero-image-caption">
             <span>
-              <MapPin size={14} /> RAJASTHAN, INDIA
+              <MapPin size={14} /> {serviceArea.heroLocation}
             </span>
             <strong>
               The journey is
@@ -157,8 +158,8 @@ export default function Home({
         <div className="container">
           <SectionHeading
             eyebrow="A CHANGE OF SCENERY"
-            title="Where will the road take you?"
-            description="Familiar favourites. New memories. Pick a route to get started."
+            title="Where in Bihar will you go next?"
+            description="From Patna to your next stop in Bihar. Pick a route to get started."
             action={{ label: "Plan your own journey", onClick: onBook }}
           />
           <div className="routes-grid">
@@ -245,7 +246,7 @@ export default function Home({
                 mode: "local" as const,
                 icon: Navigation,
                 title: "A city at your pace",
-                copy: "A cab for a few hours, and a day full of possibilities.",
+                copy: "A few hours to explore your Bihar city, at your pace.",
               },
             ].map((s) => (
               <button
@@ -366,21 +367,21 @@ export default function Home({
                   "Coffee in the city. Lunch in the hills. The best part was leaving the planning behind.",
                 initials: "AK",
                 name: "A weekend explorer",
-                route: "Mumbai → Pune",
+                route: `${routes[2].from} → ${routes[2].to}`,
               },
               {
                 quote:
                   "Enough room for the bags, the snacks, and everyone’s favourite road-trip playlist.",
                 initials: "MS",
                 name: "A family on the move",
-                route: "Bengaluru → Mysuru",
+                route: `${routes[4].from} → ${routes[4].to}`,
               },
               {
                 quote:
                   "Seeing the full estimate before choosing a cab made the whole journey feel simpler.",
                 initials: "RP",
                 name: "A thoughtful planner",
-                route: "Delhi → Jaipur",
+                route: `${routes[0].from} → ${routes[0].to}`,
               },
             ].map((t) => (
               <article className="feedback-card" key={t.name}>

@@ -22,82 +22,137 @@ export interface Passenger {
   pickup: string;
   drop: string;
 }
+export const serviceArea = {
+  state: "Bihar",
+  country: "India",
+  notice: "Service available within Bihar only.",
+  heroImage: "hero-bihar",
+  heroAlt: "Vishwa Shanti Stupa in Rajgir, Bihar, beneath a blue sky",
+  heroLocation: "RAJGIR, BIHAR",
+};
+// Starter demo coverage. All route endpoints must belong to this Bihar catalog.
 export const cities = [
-  { name: "Ahmedabad", state: "Gujarat" },
-  { name: "Bengaluru", state: "Karnataka" },
-  { name: "Chennai", state: "Tamil Nadu" },
-  { name: "Delhi", state: "Delhi NCR" },
-  { name: "Hyderabad", state: "Telangana" },
-  { name: "Jaipur", state: "Rajasthan" },
-  { name: "Mumbai", state: "Maharashtra" },
-  { name: "Mysuru", state: "Karnataka" },
-  { name: "Puducherry", state: "Puducherry" },
-  { name: "Pune", state: "Maharashtra" },
-  { name: "Vadodara", state: "Gujarat" },
-  { name: "Vijayawada", state: "Andhra Pradesh" },
+  {
+    name: "Patna",
+    state: "Bihar",
+  },
+  {
+    name: "Gaya",
+    state: "Bihar",
+  },
+  {
+    name: "Bodh Gaya",
+    state: "Bihar",
+  },
+  {
+    name: "Rajgir",
+    state: "Bihar",
+  },
+  {
+    name: "Nalanda",
+    state: "Bihar",
+  },
+  {
+    name: "Muzaffarpur",
+    state: "Bihar",
+  },
+  {
+    name: "Darbhanga",
+    state: "Bihar",
+  },
+  {
+    name: "Bhagalpur",
+    state: "Bihar",
+  },
+  {
+    name: "Purnia",
+    state: "Bihar",
+  },
+  {
+    name: "Begusarai",
+    state: "Bihar",
+  },
+  {
+    name: "Hajipur",
+    state: "Bihar",
+  },
+  {
+    name: "Arrah",
+    state: "Bihar",
+  },
 ];
+// Distances, times and tolls are illustrative demo inputs, not live routing data.
 export const routes = [
   {
-    from: "Mumbai",
-    to: "Pune",
-    km: 150,
+    from: "Patna",
+    to: "Gaya",
+    km: 100,
+    hours: 3,
+    toll: 100,
+    image: "route-gaya",
+    mood: "A journey through living heritage",
+    tag: "ROOTED IN TRADITION",
+  },
+  {
+    from: "Patna",
+    to: "Bodh Gaya",
+    km: 125,
     hours: 3.5,
-    toll: 320,
-    image: "route-pune",
-    mood: "A little change of scenery",
+    toll: 120,
+    image: "route-bodh-gaya",
+    mood: "Make room for a quieter day",
+    tag: "A MOMENT OF CALM",
+  },
+  {
+    from: "Patna",
+    to: "Rajgir",
+    km: 105,
+    hours: 3,
+    toll: 0,
+    image: "route-rajgir",
+    mood: "A little escape to the hills",
     tag: "THE WEEKEND RESET",
   },
   {
-    from: "Delhi",
-    to: "Jaipur",
-    km: 280,
-    hours: 5,
-    toll: 420,
-    image: "route-jaipur",
-    mood: "A date with the Pink City",
+    from: "Patna",
+    to: "Muzaffarpur",
+    km: 80,
+    hours: 2.5,
+    toll: 90,
+    image: "route-muzaffarpur",
+    mood: "For work, family and everything between",
+    tag: "CLOSER TO YOUR PEOPLE",
+  },
+  {
+    from: "Patna",
+    to: "Darbhanga",
+    km: 145,
+    hours: 4,
+    toll: 160,
+    image: "route-darbhanga",
+    mood: "Follow the road into Mithila",
     tag: "CULTURE CALLING",
   },
   {
-    from: "Ahmedabad",
-    to: "Vadodara",
-    km: 115,
-    hours: 2.5,
-    toll: 160,
-    image: "route-vadodara",
-    mood: "Palaces, parks & possibility",
-    tag: "A SHORT ESCAPE",
-  },
-  {
-    from: "Bengaluru",
-    to: "Mysuru",
-    km: 145,
-    hours: 3,
-    toll: 260,
-    image: "route-mysuru",
-    mood: "Take the royal route",
-    tag: "SOMETHING TIMELESS",
-  },
-  {
-    from: "Chennai",
-    to: "Puducherry",
-    km: 155,
-    hours: 3.5,
-    toll: 150,
-    image: "route-puducherry",
-    mood: "Slow mornings by the sea",
-    tag: "COASTAL STATE OF MIND",
-  },
-  {
-    from: "Hyderabad",
-    to: "Vijayawada",
-    km: 275,
-    hours: 5,
-    toll: 350,
-    image: "route-vijayawada",
-    mood: "Follow the river east",
-    tag: "THE SCENIC WAY",
+    from: "Patna",
+    to: "Bhagalpur",
+    km: 240,
+    hours: 6,
+    toll: 180,
+    image: "route-bhagalpur",
+    mood: "A new day in the Silk City",
+    tag: "A LITTLE FURTHER EAST",
   },
 ];
+export const defaultRoute = routes[0];
+export const serviceAreaLines = Array.from(
+  { length: Math.ceil(cities.length / 3) },
+  (_, index) =>
+    cities
+      .slice(index * 3, index * 3 + 3)
+      .map((city) => city.name)
+      .join(" · "),
+);
 export const packages = [
   { id: "4h40", label: "4 hours / 40 km", hours: 4, km: 40 },
   { id: "8h80", label: "8 hours / 80 km", hours: 8, km: 80 },
@@ -169,6 +224,10 @@ export const policies = {
 };
 export const faqs = [
   {
+    q: "Where is JourneyCab available?",
+    a: `Our service area is Bihar only. The demo lists ${cities.map((city) => city.name).join(", ")}. Intercity estimates cover ${routes.length} featured routes and their reverse journeys; local rentals work in each listed Bihar city. Trips outside Bihar are not available.`,
+  },
+  {
     q: "How is my fare calculated?",
     a: "This demo uses the route distance, vehicle category, a sample 5% tax, a toll estimate and any driver allowance. Round trips use a 250 km per day minimum. All figures are illustrative, and a live quote would need provider confirmation.",
   },
@@ -191,7 +250,7 @@ export const faqs = [
   },
   {
     q: "What is included in a local rental?",
-    a: "Choose 4 hours / 40 km or 8 hours / 80 km in any listed city. Both limits apply. Additional distance, overtime, parking and tolls are excluded from the sample package and need a provider quote.",
+    a: "Choose 4 hours / 40 km or 8 hours / 80 km in any listed Bihar city. Both limits apply. Additional distance, overtime, parking and tolls are excluded from the sample package and need a provider quote.",
   },
 ];
 

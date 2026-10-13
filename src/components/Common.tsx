@@ -7,7 +7,13 @@ import {
   Snowflake,
   Users,
 } from "lucide-react";
-import { brand, fleet, packages } from "../config";
+import {
+  brand,
+  fleet,
+  packages,
+  serviceArea,
+  serviceAreaLines,
+} from "../config";
 import type { Category, Journey } from "../config";
 import { money, prettyDate, modeLabel } from "../booking";
 import type { Fare } from "../booking";
@@ -203,14 +209,14 @@ export function Footer({
         <div className="footer-brand">
           <Logo onClick={onBook} light />
           <p>
-            A new city. A familiar comfort.
+            Your Bihar journey. A familiar comfort.
             <br />
             Let’s make the journey part of the story.
           </p>
           <span className="footer-tagline">{brand.tagline}</span>
         </div>
         <div>
-          <h3>Explore JourneyCab</h3>
+          <h3>Explore {brand.name}</h3>
           <button onClick={() => navigate("services")}>Our services</button>
           <button onClick={() => navigate("routes")}>Popular routes</button>
           <button onClick={() => navigate("fleet")}>Our fleet</button>
@@ -219,16 +225,17 @@ export function Footer({
           </button>
         </div>
         <div>
-          <h3>A few places to begin</h3>
-          <p>Mumbai · Pune · Delhi · Jaipur</p>
-          <p>Ahmedabad · Vadodara</p>
-          <p>Bengaluru · Mysuru · Chennai</p>
-          <p>Puducherry · Hyderabad · Vijayawada</p>
+          <h3>Our {serviceArea.state} service area</h3>
+          {serviceAreaLines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+          <p>{serviceArea.notice}</p>
         </div>
       </div>
       <div className="container footer-bottom">
         <span>
-          © {new Date().getFullYear()} JourneyCab. A concept for the road ahead.
+          © {new Date().getFullYear()} {brand.name}. A concept for the road
+          ahead.
         </span>
         <span>Demonstration website · No cab has been reserved.</span>
       </div>

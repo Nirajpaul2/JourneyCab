@@ -18,7 +18,15 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { brand, fleet, packages, policies } from "./config";
+import {
+  brand,
+  defaultRoute,
+  fleet,
+  packages,
+  policies,
+  routes,
+  serviceArea,
+} from "./config";
 import type { Category, Journey, Passenger, TripMode } from "./config";
 import {
   calculateFare,
@@ -85,15 +93,12 @@ export default function App() {
     setEditing(false);
     setMobileMenu(false);
     setTimeout(() => {
-      document
-        .getElementById(id)
-        ?.scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-            .matches
-            ? "instant"
-            : "smooth",
-          block: "start",
-        });
+      document.getElementById(id)?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      });
     }, 40);
   };
   const search = (value = journey) => {
@@ -394,22 +399,23 @@ export default function App() {
                           <MapPin size={38} />
                           <h2>A road we haven’t mapped yet.</h2>
                           <p>
-                            This demo includes six intercity routes and their
-                            reverse journeys. Try a featured route, or explore a
-                            local rental.
+                            This demo includes {routes.length} intercity routes
+                            within {serviceArea.state} and their reverse
+                            journeys. Try a featured Bihar route, or explore a
+                            local rental in a listed city.
                           </p>
                           <button
                             className="button primary"
                             onClick={() => {
                               const next = {
                                 ...journey,
-                                from: "Mumbai",
-                                to: "Pune",
+                                from: defaultRoute.from,
+                                to: defaultRoute.to,
                               };
                               search(next);
                             }}
                           >
-                            Explore Mumbai → Pune
+                            Explore {defaultRoute.from} → {defaultRoute.to}
                             <ArrowRight size={16} />
                           </button>
                           <button className="text-button" onClick={edit}>

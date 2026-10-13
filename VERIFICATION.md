@@ -1,29 +1,34 @@
 # Verification — 12 October 2026
 
-## Automated calculation and validation checks
+## Bihar-only refactor: current checks
 
-`npm test`: 9 passing tests covering exact one-way estimates, inclusive round-trip days and daily minimums, both local packages, every featured route/category/mode total, reverse-route symmetry, unsupported pairs, invalid journey/passenger data, and India-time date boundaries.
+`npm test`: 13 passing tests. Coverage includes exact one-way estimates, inclusive round-trip days and daily minimums, both local packages, every featured route/category/mode total, reverse-route symmetry, unsupported pairs, invalid journey/passenger data, and India-time date boundaries. New coverage verifies that all catalog cities and route endpoints are in Bihar, rejects out-of-state pickup/destination values, and checks both local packages in all 12 Bihar cities.
 
 `npm run build`: TypeScript strict checks and Vite production build pass.
 
-## Real browser checks
+Real browser checks against the local Bihar build:
 
-Headless Chromium, against the locally running app:
+- Complete Patna → Gaya Sedan one-way journey at 1440px: results, review and simulated confirmation — **₹1,465**.
+- Complete Patna → Gaya Sedan round trip, three inclusive days, at 768px — **₹11,383**.
+- Complete Patna Sedan 8-hour local rental at 375px — **₹2,728**. No drop address is required.
+- Each review shows the expected base, tax, toll and driver components; totals stay consistent through confirmation. Starting a new booking clears the passenger fields.
+- Typing Ranchi produces no matching city options and blocks search with a Bihar-specific validation message.
+- Keyboard navigation to the last city, Arrah, scrolls the active option into view (list scrollTop 350; option bounds within list bounds).
+- Patna → Bhagalpur route card prefills the form correctly.
+- Patna → Nalanda shows the intentional unsupported-route state; its Patna → Gaya recovery action restores valid results.
+- Homepage widths 375, 768 and 1440px have no horizontal overflow. Mobile and desktop layouts were visually inspected.
+- The Rajgir hero and all six Bihar destination images load successfully. Attribution was updated for all seven photos.
 
-- Complete one-way journey at 1440px: search, sorting, sedan selection, passenger validation, going back and retaining data, fare review, and simulated confirmation — **₹2,368**.
-- Complete round trip at 768px — **₹11,823**.
-- Complete 8-hour local rental at 375px — **₹2,728**.
-- Confirmed that each fare's base + tax + toll + driver allowance equals the displayed total, which stays the same across results, review and confirmation.
-- Verified generated demo references and the explicit no-reservation notice.
-- Start a New Booking clears passenger details.
-- Tested searchable cities, identical cities, past departure, unsupported routes, category/capacity filtering, empty results, and recoverable simulated errors.
-- Tested mobile navigation, route/form navigation, expandable FAQs, image credits dialog, Escape to close, and fare disclosures.
-- Homepage layouts checked at 375, 768, 1024 and 1440px. Flow screenshots visually inspected on desktop, tablet and mobile. No horizontal overflow or broken images found.
-- No console errors or page errors during the complete test suite.
-- No non-GET requests, third-party requests, or local/session storage entries during booking. Images and font are self-hosted.
+Screenshots are retained in the ignored local `qa/` directory. These checks validate the demonstration, not operational service availability or real prices.
 
-These checks validate the demonstration, not real service availability or operational policies. Browser screenshots and test-run scripts are retained in the ignored local `qa/` directory.
+## Earlier baseline checks
+
+Before the Bihar refactor, the broader Chromium suite checked sorting, category/capacity filtering, passenger validation, Back/Edit data retention, identical cities, past departure, loading/empty/recoverable error states, mobile navigation, expandable FAQs, credits-dialog keyboard dismissal, and fare disclosures. That run also checked 1024px layout, recorded no console/page errors, and confirmed no non-GET booking requests, third-party requests, or local/session storage entries. Those checks are historical baseline evidence and were not all rerun during the data refactor.
 
 ## Accessibility
 
-After correcting muted-text contrast, the homepage, results, and review screens have no violations in an axe-core 4.10.3 audit covering WCAG 2 A/AA and WCAG 2.1 AA rules. This automated audit complements the keyboard and layout checks; it is not a full accessibility certification.
+The earlier baseline homepage, results and review screens had no violations in an axe-core 4.10.3 audit covering WCAG 2 A/AA and WCAG 2.1 AA rules. The city-list keyboard scrolling issue found in the later implementation audit has now been fixed and verified in the browser. A full axe audit was not repeated for the Bihar copy changes.
+
+## Publication status
+
+The Bihar update is verified locally. The existing Sites management API still returns `Sites project not found`, so the hosted preview has not received these changes. Its existing project identity was preserved. See the GitHub repository and local source for the current Bihar implementation.
