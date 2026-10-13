@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
-    "preview": "vite preview --host 127.0.0.1",
-    "test": "node --import tsx --test src/booking.test.ts server/*.test.ts",
+    "preview": "node scripts/preview.mjs",
+    "test": "node --import tsx --test src/*.test.ts server/*.test.ts",
     "dev:web": "vite --host 127.0.0.1",
     "dev:api": "node --import tsx --watch server/index.ts",
     "start": "node --import tsx server/index.ts",
