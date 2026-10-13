@@ -20,7 +20,7 @@ The historical `.openai/hosting.json` belongs to the old static Sites demo. **Pu
 4. Run `npm start`. Route frontend pages and `/api` to this same process. `/api/health` checks database connectivity.
 5. Production request submission defaults to closed. Complete the operator, policy and infrastructure setup, then set `BOOKINGS_OPEN=true` for a supervised end-to-end booking. Confirm HTTPS, secure session cookies, staff sign-in, driver assignment and customer delivery before announcing availability. Set it back to `false` to pause new requests.
 
-A multi-stage `Dockerfile` is included. Its container build has not been exercised in this workspace. Supply `APP_ORIGIN` and a persistent `/app/data` volume owned by container UID 1000. Do not expose an unprotected HTTP container directly as production. Load secrets at runtime, not into the image.
+A multi-stage `Dockerfile` and local `compose.yaml` are included. For local use, `npm run docker -- up -d --build --wait` starts a detached service with automatic restart and the existing `data/` directory. The wrapper supplies the local UID/GID for database access. For production, supply `APP_ORIGIN` and a persistent `/app/data` volume owned by the runtime UID. Do not expose an unprotected HTTP container directly as production. Load secrets at runtime, not into the image.
 
 ## Create and manage staff accounts
 
@@ -40,7 +40,7 @@ Environment files are optional: `node --env-file=.env --import tsx server/index.
 
 ## Dispatch workflow
 
-1. Customer selects a supported Bihar route/category or local package, supplies contact and pickup information, consents to booking contact, and requests a ride.
+1. Customer selects a published one-way route and supported AC car category, supplies contact and pickup information, consents to booking contact, and requests a ride.
 2. The server validates the journey and calculates the initial estimate itself. Request retries are idempotent. The customer gets a reference and a private status link; the link’s access key stays in its URL fragment and is sent only as an API authorization header. Only its hash is stored.
 3. Staff opens `/admin`, checks availability with partners, agrees the final fare with the customer, and records fare inclusions/exclusions and customer agreement.
 4. Staff adds a verified partner to the register and assigns an active partner in the requested vehicle category after confirming driver acceptance. Overlapping assigned/confirmed trips are blocked. New banner-priced trips reserve a conservative 24-hour allocation window because no travel durations were supplied. Existing bookings keep their stored windows. Staff must still verify real travel and repositioning time before assigning a partner.
@@ -71,3 +71,9 @@ With all three credentials present, the server processes pending messages every 
 The implementation is ready for staging review. Going live still needs actual fares and route/service hours, real verified partners, a staffed contact number, operator identity and approved policies, the chosen host/domain, operational backups/monitoring, and a verified notification channel. Perform a production security review and a supervised end-to-end booking using the chosen infrastructure. Current security controls and local tests are not a substitute for that launch review.
 
 Implementation references: [Node SQLite API](https://nodejs.org/download/release/latest-jod/docs/api/sqlite.html), [OWASP session guidance](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), [Twilio Message API](https://www.twilio.com/docs/messaging/api/message-resource).
+
+## Planned API/database migration
+
+See [FASTAPI-SUPABASE-PLAN.md](FASTAPI-SUPABASE-PLAN.md) for the FastAPI/PostgreSQL architecture, endpoint compatibility, access model, data import, cutover and rollback plan. The running application remains Node/SQLite until the replacement has passed parity tests.
+
+Docker restart policies recover exited containers; an unhealthy health check alone does not restart a hung process. Production still needs external monitoring and a recovery policy. Docker Desktop must be running and the Mac awake for the local service to be reachable. No OS startup, sleep or unrelated container settings are changed by this setup.

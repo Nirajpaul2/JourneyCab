@@ -23,6 +23,21 @@ npm start        # API + built frontend; see DEPLOYMENT.md for origin/TLS config
 
 `npm run preview` serves the built frontend **and API** together at `http://127.0.0.1:4173` using a separate `data/preview.sqlite` database. Run `npm run build` first. Keep the local server running while using the booking page. `.env.example` documents available settings. Environment files must be explicitly loaded; see the deployment guide.
 
+## Keep the local service running with Docker
+
+```sh
+npm run docker -- up -d --build --wait
+npm run docker -- ps
+npm run docker -- logs --tail 100
+npm run docker:test  # Isolated booking + container restart smoke test
+```
+
+Open `http://127.0.0.1:5173/` or `/admin`. Stop any `npm run dev` process using port 5173 before the first Docker startup. The container serves both the built site and the booking API, uses `restart: unless-stopped`, and binds the existing ignored `data/` directory for persistence. The wrapper matches your local UID/GID so private database permissions are retained. Run only one service against this SQLite database.
+
+After source changes, rerun the build/start command. `npm run docker -- restart` restarts the service; `npm run docker -- stop` deliberately stops it. Keep Docker Desktop running. The service is unavailable while the Mac is asleep, powered off or Docker is stopped. For 24/7 customer access, deploy to an always-on HTTPS host.
+
+This Compose file is **loopback-only local HTTP**, with no SMS credentials loaded. It is not a public production configuration. See [DEPLOYMENT.md](DEPLOYMENT.md) and the [FastAPI/Supabase migration plan](FASTAPI-SUPABASE-PLAN.md).
+
 ## Staff setup
 
 There is no seeded/default account. See [DEPLOYMENT.md](DEPLOYMENT.md#create-and-manage-staff-accounts) to create a staff account securely using the management command, then sign in at `/admin`.

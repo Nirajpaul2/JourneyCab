@@ -11,7 +11,9 @@
     "dev:web": "vite --host 127.0.0.1",
     "dev:api": "node --import tsx --watch server/index.ts",
     "start": "node --import tsx server/index.ts",
-    "manage": "node --import tsx server/manage.ts"
+    "manage": "node --import tsx server/manage.ts",
+    "docker": "node scripts/docker-local.mjs",
+    "docker:test": "node scripts/docker-smoke.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.0",

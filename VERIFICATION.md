@@ -30,9 +30,19 @@ The frontend and API ran against an isolated temporary SQLite database containin
 
 Screenshots are in the ignored local `qa/` folder: `operations-desktop.jpg` and `customer-confirmation-mobile.jpg`.
 
+## Docker availability checks
+
+- Built the multi-stage Node image successfully, including frontend/backend TypeScript checks and the production frontend bundle.
+- `npm run docker:test` passed against a disposable database: admin page serving, unauthorized staff API rejection, write-origin protection, banner-priced booking creation, idempotent retries, private tracking, and persistence after a container restart. The test reads the current ephemeral port after restart because Docker may reassign it.
+- Started `journeycab-app-1` detached on `127.0.0.1:5173` with a healthy database probe, `unless-stopped` restart policy, non-root runtime, private persistent bind mount and log limits.
+- Live `/api/health` returned `{"ok":true}` and `/api/session` returned `{"email":null}`. No default staff account exists; the preserved local database had zero staff/booking/driver records before cutover.
+- Created a consistent pre-cutover backup under ignored `data/backups/`. The disposable smoke database/container was removed. No messages were sent and no existing Supabase production service was modified.
+- The initial public base-image pull was blocked by a stalled Docker Desktop credential helper. An anonymous pull with a temporary config fetched the official image; user Docker credentials/settings were left unchanged. Subsequent image builds succeeded using the cached base.
+- No FastAPI/Supabase migration or production hosting is claimed; see `FASTAPI-SUPABASE-PLAN.md`. Local availability still requires Docker Desktop and an awake Mac.
+
 ## Verification limits
 
-No production host, real SMS credentials or domain/TLS configuration was available. Provider delivery and callbacks, operator tax treatment/policies, uptime monitoring, scheduled off-host backups, production load/security review and the Docker image build have not been verified. The SQLite backup operation and restoration are covered by an automated test; operational scheduling is not configured.
+No production host, real SMS credentials or domain/TLS configuration was available. Provider delivery and callbacks, operator tax treatment/policies, uptime monitoring, scheduled off-host backups, production load/security review have not been verified. The SQLite backup operation and restoration are covered by an automated test; operational scheduling is not configured.
 
 The earlier static frontend had an axe accessibility audit. That audit does not cover the new operations, tracking and privacy pages; no full automated accessibility audit is claimed for these pages. Form labels, keyboard focus styling and responsive layouts are implemented.
 
