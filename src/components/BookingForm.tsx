@@ -137,7 +137,7 @@ function CitySelect({
           ))}
           {!matches.length && (
             <li className="no-city">
-              No matching Bihar cities. Try {defaultRoute.from} or{" "}
+              No matching service-area cities. Try {defaultRoute.from} or{" "}
               {defaultRoute.to}.
             </li>
           )}
@@ -337,7 +337,7 @@ export default function BookingForm({
       )}
       <div className="booking-foot">
         <span>A little planning. A lot to look forward to.</span>
-        <span>Bihar only · Illustrative fares. No payment required.</span>
+        <span>One-way AC fares · Tolls and parking extra.</span>
       </div>
     </form>
   );

@@ -273,7 +273,7 @@ export default function Operations() {
               <div>
                 <span>Active partners</span>
                 <strong>{drivers.filter((d) => d.active).length}</strong>
-                <small>Across Bihar</small>
+                <small>Bihar & selected UP routes</small>
               </div>
             </div>
             {!sms && (

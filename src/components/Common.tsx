@@ -111,23 +111,15 @@ export function FareBreakdown({
       </summary>
       <dl>
         <div>
-          <dt>Base fare</dt>
+          <dt>Advertised one-way AC fare</dt>
           <dd>{money(fare.base)}</dd>
         </div>
         <div>
-          <dt>Sample tax (5%)</dt>
-          <dd>{money(fare.tax)}</dd>
-        </div>
-        <div>
-          <dt>Toll estimate</dt>
-          <dd>{money(fare.toll)}</dd>
-        </div>
-        <div>
-          <dt>Driver allowance</dt>
-          <dd>{money(fare.driver)}</dd>
+          <dt>Toll tax & parking</dt>
+          <dd>Payable separately</dd>
         </div>
         <div className="fare-total">
-          <dt>Estimated total</dt>
+          <dt>Route fare</dt>
           <dd>{money(fare.total)}</dd>
         </div>
       </dl>
@@ -173,7 +165,7 @@ export function DemoNotice() {
     <div className="demo-notice">
       <Info size={16} />
       <span>
-        Initial estimates only. Our team confirms availability and agrees your
+        Tolls and parking are extra. Our team confirms availability and agrees your
         final fare before reserving a cab.
       </span>
     </div>
@@ -229,7 +221,7 @@ export function Footer({
           </button>
         </div>
         <div>
-          <h3>Our {serviceArea.state} service area</h3>
+          <h3>Our service area</h3>
           {serviceAreaLines.map((line) => (
             <p key={line}>{line}</p>
           ))}

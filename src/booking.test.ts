@@ -14,68 +14,41 @@ const trip = {
   time: "09:00",
   returnDate: "2099-10-15",
 };
-test("One-way Patna to Gaya uses a reproducible, itemised fare", () => {
-  assert.deepEqual(calculateFare(trip, "sedan"), {
-    base: 1300,
-    driver: 0,
-    tax: 65,
-    toll: 100,
-    total: 1465,
-    km: 100,
-    days: 1,
-  });
+test("Every advertised route uses the banner price without extra sample charges", () => {
+  const expected: [string, string, number][] = [
+    ["Siwan", "Patna", 2299], ["Siwan", "Chhapra", 1699],
+    ["Siwan", "Varanasi", 5399], ["Siwan", "Rajgir", 4999],
+    ["Maharajganj", "Patna", 2199], ["Chhapra", "Patna", 1599],
+    ["Rasulpur", "Patna", 2399], ["Chainpur", "Patna", 2399],
+    ["Ekma", "Patna", 2099], ["Siwan", "Muzaffarpur", 2699],
+    ["Maharajganj", "Muzaffarpur", 2699], ["Siwan", "Raxaul", 2799],
+    ["Maharajganj", "Raxaul", 2799], ["Gopalganj", "Patna", 2599],
+    ["Mirganj", "Patna", 2599], ["Barhiya", "Patna", 2499],
+    ["Siwan", "Gorakhpur", 2799], ["Maharajganj", "Gorakhpur", 2899],
+    ["Siwan", "Darbhanga", 4299],
+  ];
+  assert.equal(routes.length, expected.length);
+  for (const [from, to, price] of expected) {
+    for (const category of ["sedan", "hatchback"] as const) {
+      const f = calculateFare({ ...trip, from, to }, category)!;
+      assert.equal(f.base, price);
+      assert.equal(f.total, price);
+      assert.equal(f.tax + f.toll + f.driver, 0);
+    }
+    assert.equal(calculateFare({ ...trip, from: to, to: from }, "sedan"), null);
+  }
 });
-test("Round-trip uses inclusive days and daily kilometre minimum", () => {
-  assert.deepEqual(calculateFare({ ...trip, mode: "roundtrip" }, "sedan"), {
-    base: 9750,
-    driver: 900,
-    tax: 533,
-    toll: 200,
-    total: 11383,
-    km: 750,
-    days: 3,
-  });
-});
-test("Same-day round-trip uses actual return distance when above minimum", () => {
-  const f = calculateFare(
-    { ...trip, to: "Darbhanga", mode: "roundtrip", returnDate: trip.date },
-    "sedan",
-  )!;
-  assert.equal(f.km, 290);
-  assert.equal(f.driver, 300);
-});
-test("Local 4h/40km and 8h/80km packages itemise tax without intercity tolls", () => {
-  assert.equal(
-    calculateFare({ ...trip, mode: "local" }, "hatchback")!.total,
-    1154,
-  );
-  const f = calculateFare(
-    { ...trip, mode: "local", package: "8h80" },
-    "hatchback",
-  )!;
-  assert.equal(f.base, 2198);
-  assert.equal(f.total, 2308);
-  assert.equal(f.km, 80);
-  assert.equal(f.toll, 0);
-});
-test("Every route/category/mode total equals its components; reverse fares match", () => {
-  for (const r of routes)
+test("Unpublished services and categories never receive invented prices", () => {
+  for (const mode of ["local", "roundtrip"] as const)
     for (const c of fleet)
-      for (const mode of ["oneway", "roundtrip", "local"] as const) {
-        const j = { ...trip, mode, from: r.from, to: r.to };
-        const f = calculateFare(j, c.id)!;
-        assert.equal(f.total, f.base + f.tax + f.toll + f.driver);
-        assert.deepEqual(
-          calculateFare({ ...j, from: r.to, to: r.from }, c.id),
-          f,
-        );
-      }
-});
-test("Unsupported pairs have no invented quote", () => {
-  assert.equal(calculateFare({ ...trip, to: "Nalanda" }, "sedan"), null);
+      assert.equal(calculateFare({ ...trip, mode }, c.id), null);
+  for (const category of ["suv", "premium-suv"] as const)
+    assert.equal(calculateFare(trip, category), null);
+  for (const [from, to] of [["Patna", "Varanasi"], ["Gorakhpur", "Varanasi"], ["Siwan", "Gaya"]])
+    assert.equal(calculateFare({ ...trip, from, to }, "sedan"), null);
 });
 test("Validation catches missing/identical cities, past IST departure and early return", () => {
-  assert.ok(validateJourney({ ...trip, to: "Patna" }).to);
+  assert.ok(validateJourney({ ...trip, to: trip.from }).to);
   assert.ok(validateJourney({ ...trip, from: "" }).from);
   assert.ok(
     validateJourney({ ...trip, mode: "roundtrip", returnDate: "2099-10-12" })
@@ -112,9 +85,9 @@ test("Passenger validation permits optional email and local destination omission
   );
 });
 
-test("Coverage and all featured endpoints stay inside Bihar", () => {
+test("Coverage matches the banner, including only its two Uttar Pradesh cities", () => {
   assert.ok(cities.length > 0);
-  assert.ok(cities.every((city) => city.state === "Bihar"));
+  assert.deepEqual(cities.filter((city) => city.state !== "Bihar").map((city) => city.name).sort(), ["Gorakhpur", "Varanasi"]);
   for (const route of routes) {
     assert.ok(cities.some((city) => city.name === route.from));
     assert.ok(cities.some((city) => city.name === route.to));
@@ -123,35 +96,21 @@ test("Coverage and all featured endpoints stay inside Bihar", () => {
   assert.equal(initialJourney().from, defaultRoute.from);
   assert.equal(initialJourney().to, defaultRoute.to);
 });
-test("Out-of-state pickup is rejected for every trip mode, including local rentals", () => {
+test("Unsupported pickup is rejected for every trip mode, including local rentals", () => {
   for (const mode of ["oneway", "roundtrip", "local"] as const) {
     for (const from of ["Delhi", "Mumbai", "Ranchi", "Kolkata"]) {
       const journey = { ...trip, mode, from };
-      assert.match(validateJourney(journey).from, /Bihar/);
+      assert.match(validateJourney(journey).from, /service-area/);
       assert.equal(calculateFare(journey, "sedan"), null);
     }
   }
 });
-test("Out-of-state destination never receives an intercity quote", () => {
+test("Unsupported destination never receives an intercity quote", () => {
   for (const mode of ["oneway", "roundtrip"] as const) {
     for (const to of ["Delhi", "Mumbai", "Ranchi", "Kolkata"]) {
       const journey = { ...trip, mode, to };
-      assert.match(validateJourney(journey).to, /Bihar/);
+      assert.match(validateJourney(journey).to, /service-area/);
       assert.equal(calculateFare(journey, "sedan"), null);
     }
   }
-});
-test("Every listed Bihar city supports both local demo packages", () => {
-  for (const city of cities)
-    for (const pack of ["4h40", "8h80"]) {
-      const journey = {
-        ...trip,
-        mode: "local" as const,
-        from: city.name,
-        to: "",
-        package: pack,
-      };
-      assert.deepEqual(validateJourney(journey), {});
-      assert.ok(calculateFare(journey, "sedan")!.total > 0);
-    }
 });

@@ -3801,3 +3801,47 @@ footer {
     min-height: 45px;
   }
 }
+
+/* Client-published directional route fares. */
+.published-routes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.published-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--line, #dce3d6);
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.published-route:hover {
+  border-color: #345c45;
+  background: #f4f7ee;
+}
+.published-route:focus-visible {
+  outline: 3px solid #345c45;
+  outline-offset: 3px;
+}
+.published-route-path,
+.published-route-price {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.published-route-path { flex-wrap: wrap; font-weight: 600; }
+.published-route-path svg { flex-shrink: 0; color: #70816c; }
+.published-route-price { white-space: nowrap; color: #345c45; }
+.published-route-price strong { font-size: 20px; }
+@media (max-width: 760px) {
+  .published-routes { grid-template-columns: 1fr; }
+  .published-route { padding: 18px 16px; }
+  .published-route-path { gap: 8px; font-size: 14px; }
+}

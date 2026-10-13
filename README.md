@@ -1,6 +1,6 @@
 # JourneyCab
 
-A Bihar-only ride-request service with local driver partners and manual staff confirmation. The React/TypeScript frontend is backed by a Node/SQLite API. This first release is implemented and tested locally; production hosting, real fares, operator details and messaging credentials still need configuration.
+A ride-request service for Bihar and selected routes to Uttar Pradesh with local driver partners and manual staff confirmation. The React/TypeScript frontend is backed by a Node/SQLite API. This first release is implemented and tested locally; production hosting, operator details and messaging credentials still need configuration.
 
 ## Run locally
 
@@ -21,7 +21,7 @@ npm run build    # Frontend + backend TypeScript checks, Vite production bundle
 npm start        # API + built frontend; see DEPLOYMENT.md for origin/TLS configuration
 ```
 
-`npm run preview` serves only the frontend bundle; use the Node server for full workflow testing. `.env.example` documents available settings. Environment files must be explicitly loaded; see the deployment guide.
+`npm run preview` serves the built frontend **and API** together at `http://127.0.0.1:4173` using a separate `data/preview.sqlite` database. Run `npm run build` first. Keep the local server running while using the booking page. `.env.example` documents available settings. Environment files must be explicitly loaded; see the deployment guide.
 
 ## Staff setup
 
@@ -29,7 +29,7 @@ There is no seeded/default account. See [DEPLOYMENT.md](DEPLOYMENT.md#create-and
 
 ## First-release workflow
 
-1. Customer chooses One Way, Round Trip or Local, selects a category, enters contact and address details, and requests a ride.
+1. Customer chooses a published one-way route and five-seater AC car category, enters contact and address details, and requests a ride.
 2. The API saves a **pending request**, returning a reference and private status link. No automatic reservation or payment occurs.
 3. Staff confirms availability with partner drivers, agrees the fare with the customer and records its inclusions.
 4. Staff assigns an active driver in the requested category; overlapping bookings are rejected.
@@ -38,13 +38,13 @@ There is no seeded/default account. See [DEPLOYMENT.md](DEPLOYMENT.md#create-and
 
 The dashboard also supports driver registration/activation, request search/filtering, audit history, cancellation/decline and completion. Authentication, session revocation, same-origin write checks, input limits, rate limits, idempotent submission and version-checked staff updates are enforced by the server.
 
-## Bihar coverage and estimates
+## Published routes and fares
 
-Pickup cities: **Patna, Gaya, Bodh Gaya, Rajgir, Nalanda, Muzaffarpur, Darbhanga, Bhagalpur, Purnia, Begusarai, Hajipur and Arrah**.
+The client banner supplied on 13 October 2026 replaces the demo fare catalog with **19 directional one-way fares**, including Siwan → Varanasi and Siwan/Maharajganj → Gorakhpur, as approved by the client. See [ROUTE-PRICING.md](ROUTE-PRICING.md) for the complete transcription and assumptions.
 
-Featured intercity pairs: **Patna ↔ Gaya, Bodh Gaya, Rajgir, Muzaffarpur, Darbhanga and Bhagalpur**. All 12 cities support local 4-hour/40-km and 8-hour/80-km requests. Other intercity pairs show the unsupported-route state. Out-of-state cities are rejected by both form and API validation.
+Examples: Siwan → Patna **₹2,299**, Chhapra → Patna **₹1,599**, Siwan → Varanasi **₹5,399**. Published prices cover five-seater AC cars; toll tax and parking are extra. No sample tax or kilometre multiplier is added. Staff agrees final charges and tax treatment before confirmation. Reverse routes, larger vehicles, round trips and local rentals have no supplied price and are not available for online booking. Existing stored bookings are preserved.
 
-Initial sample Sedan estimates: Patna → Gaya one way ₹1,465; three-day round trip ₹11,383; local 8 hours / 80 km ₹2,728. These remain illustrative until operational pricing is supplied. Staff must agree a final fare with the customer before confirming. Images and font are bundled locally; preserve [ASSET_CREDITS.md](ASSET_CREDITS.md) and font licensing.
+Images and font are bundled locally; preserve [ASSET_CREDITS.md](ASSET_CREDITS.md) and font licensing.
 
 ## Source map
 

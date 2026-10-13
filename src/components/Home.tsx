@@ -18,8 +18,8 @@ import {
   Navigation,
 } from "lucide-react";
 import type { Journey, TripMode } from "../config";
-import { faqs, fleet, policies, routes, serviceArea } from "../config";
-import { calculateFare, money } from "../booking";
+import { advertisedCategories, faqs, fleet, policies, routes, serviceArea } from "../config";
+import { money } from "../booking";
 import BookingForm from "./BookingForm";
 import { Amenities, SectionHeading } from "./Common";
 export default function Home({
@@ -84,7 +84,7 @@ export default function Home({
             </span>
           </h1>
           <p>
-            Travel within Bihar, compare cabs,
+            Travel across Bihar and on selected routes to Uttar Pradesh,
             <br className="desktop-break" /> and see your fare upfront.
           </p>
           <div className="hero-chips">
@@ -158,63 +158,30 @@ export default function Home({
         <div className="container">
           <SectionHeading
             eyebrow="A CHANGE OF SCENERY"
-            title="Where in Bihar will you go next?"
-            description="From Patna to your next stop in Bihar. Pick a route to get started."
+            title="Your route. Your one-way fare."
+            description="Published fares for a five-seater AC car. Choose a route to plan your pickup."
             action={{ label: "Plan your own journey", onClick: onBook }}
           />
-          <div className="routes-grid">
-            {routes.map((r, i) => (
+          <div className="published-routes">
+            {routes.map((r) => (
               <button
-                className="route-card"
-                key={r.to}
+                className="published-route"
+                key={`${r.from}-${r.to}`}
                 onClick={() => onRoute(r.from, r.to)}
-                aria-label={`Book ${r.from} to ${r.to}`}
+                aria-label={`Book ${r.from} to ${r.to} for ${money(r.fare)}, tolls and parking extra`}
               >
-                <div className="route-photo">
-                  <img
-                    src={`/images/${r.image}.jpg`}
-                    alt={`${r.to} travel destination`}
-                    loading="lazy"
-                  />
-                  <span className="route-tag">{r.tag}</span>
-                  <span className="route-number">0{i + 1}</span>
-                </div>
-                <div className="route-card-content">
-                  <h3>
-                    {r.from}
-                    <ArrowRight size={17} />
-                    {r.to}
-                  </h3>
-                  <p>{r.mood}</p>
-                  <div className="route-card-bottom">
-                    <span>
-                      From{" "}
-                      <strong>
-                        {money(
-                          calculateFare(
-                            {
-                              ...journey,
-                              mode: "oneway",
-                              from: r.from,
-                              to: r.to,
-                            },
-                            "hatchback",
-                          )!.total,
-                        )}
-                      </strong>
-                      <small>Illustrative estimate · ~{r.hours} hrs</small>
-                    </span>
-                    <span className="round-arrow">
-                      <ArrowUpRight size={20} />
-                    </span>
-                  </div>
-                </div>
+                <span className="published-route-path">
+                  <span>{r.from}</span><ArrowRight size={16} /><span>{r.to}</span>
+                </span>
+                <span className="published-route-price">
+                  <strong>{money(r.fare)}</strong><ArrowUpRight size={17} />
+                </span>
               </button>
             ))}
           </div>
           <p className="section-note">
-            A little preview of what’s possible. Fares and travel times are
-            illustrative estimates.
+            One-way fares apply in the direction shown. Toll tax and parking are
+            extra. Availability and the final fare are confirmed by our team.
           </p>
         </div>
       </section>
@@ -240,13 +207,13 @@ export default function Home({
                 mode: "roundtrip" as const,
                 icon: Route,
                 title: "There & back again",
-                copy: "A weekend away. A visit home. A ride both ways.",
+                copy: "Separate quote required. Online fares coming later.",
               },
               {
                 mode: "local" as const,
                 icon: Navigation,
                 title: "A city at your pace",
-                copy: "A few hours to explore your Bihar city, at your pace.",
+                copy: "Separate quote required. Online fares coming later.",
               },
             ].map((s) => (
               <button
@@ -270,10 +237,10 @@ export default function Home({
           <SectionHeading
             eyebrow="GOOD COMPANY. A COMFORTABLE CAB."
             title="Find your perfect travel companion."
-            description="A little luggage or the whole family. There’s room for your kind of trip."
+            description="Five-seater AC cars, with space for up to four passengers and a driver."
           />
           <div className="fleet-grid">
-            {fleet.map((c, i) => (
+            {fleet.filter((c) => advertisedCategories.includes(c.id)).map((c, i) => (
               <article className="fleet-card" key={c.id}>
                 <div className="fleet-photo">
                   <img

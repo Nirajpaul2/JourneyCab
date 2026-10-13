@@ -13,9 +13,8 @@ import {
   calculateFare,
   validateJourney,
   validatePassenger,
-  findRoute,
 } from "../src/booking";
-import { cities, fleet, packages } from "../src/config";
+import { cities, fleet } from "../src/config";
 import type { Category, Journey, Passenger } from "../src/config";
 import type {
   Booking,
@@ -178,7 +177,7 @@ export class Store {
     );
     requireThat(
       cities.some((c) => c.name === driver.city),
-      "Choose a Bihar base city.",
+      "Choose a base city from the service-area list.",
     );
     requireThat(
       fleet.some((c) => c.id === driver.category),
@@ -300,7 +299,7 @@ export class Store {
       );
     requireThat(
       Object.keys(validateJourney(journey)).length === 0,
-      "Choose a valid future journey within Bihar.",
+      "Choose a valid future journey in the service area.",
     );
     requireThat(
       Object.keys(validatePassenger(passenger, journey.mode)).length === 0,
@@ -356,15 +355,10 @@ export class Store {
         updatedAt: now,
       };
       const starts = Date.parse(`${journey.date}T${journey.time}:00+05:30`);
-      const ends =
-        journey.mode === "roundtrip"
-          ? Date.parse(`${journey.returnDate}T23:59:59+05:30`)
-          : starts +
-            ((journey.mode === "local"
-              ? packages.find((p) => p.id === journey.package)!.hours
-              : findRoute(journey)!.hours) +
-              1) *
-              3600_000;
+      // The banner supplies no travel durations. Reserve a conservative 24h
+      // window for new requests so a guessed route time cannot double-book a
+      // partner. Existing bookings retain their saved allocation windows.
+      const ends = starts + 24 * 3600_000;
       this.db
         .prepare("INSERT INTO bookings VALUES(?,?,?,?,?,?,?,?,?,?)")
         .run(

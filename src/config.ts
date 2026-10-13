@@ -23,127 +23,46 @@ export interface Passenger {
   drop: string;
 }
 export const serviceArea = {
-  state: "Bihar",
+  state: "Bihar & selected Uttar Pradesh routes",
   country: "India",
-  notice: "Service available within Bihar only.",
+  notice: "Bihar routes · Selected trips to Uttar Pradesh",
   heroImage: "hero-bihar",
   heroAlt: "Vishwa Shanti Stupa in Rajgir, Bihar, beneath a blue sky",
   heroLocation: "RAJGIR, BIHAR",
 };
-// Starter demo coverage. All route endpoints must belong to this Bihar catalog.
-export const cities = [
-  {
-    name: "Patna",
-    state: "Bihar",
-  },
-  {
-    name: "Gaya",
-    state: "Bihar",
-  },
-  {
-    name: "Bodh Gaya",
-    state: "Bihar",
-  },
-  {
-    name: "Rajgir",
-    state: "Bihar",
-  },
-  {
-    name: "Nalanda",
-    state: "Bihar",
-  },
-  {
-    name: "Muzaffarpur",
-    state: "Bihar",
-  },
-  {
-    name: "Darbhanga",
-    state: "Bihar",
-  },
-  {
-    name: "Bhagalpur",
-    state: "Bihar",
-  },
-  {
-    name: "Purnia",
-    state: "Bihar",
-  },
-  {
-    name: "Begusarai",
-    state: "Bihar",
-  },
-  {
-    name: "Hajipur",
-    state: "Bihar",
-  },
-  {
-    name: "Arrah",
-    state: "Bihar",
-  },
-];
-// Distances, times and tolls are illustrative demo inputs, not live routing data.
+// Transcribed from the client-supplied Aryan Tour and Travel banner (13 Oct 2026).
+// Directional prices for a five-seater AC vehicle. Tolls and parking are extra.
+// No reverse fares, journey distances, travel times or additional taxes were supplied.
 export const routes = [
-  {
-    from: "Patna",
-    to: "Gaya",
-    km: 100,
-    hours: 3,
-    toll: 100,
-    image: "route-gaya",
-    mood: "A journey through living heritage",
-    tag: "ROOTED IN TRADITION",
-  },
-  {
-    from: "Patna",
-    to: "Bodh Gaya",
-    km: 125,
-    hours: 3.5,
-    toll: 120,
-    image: "route-bodh-gaya",
-    mood: "Make room for a quieter day",
-    tag: "A MOMENT OF CALM",
-  },
-  {
-    from: "Patna",
-    to: "Rajgir",
-    km: 105,
-    hours: 3,
-    toll: 0,
-    image: "route-rajgir",
-    mood: "A little escape to the hills",
-    tag: "THE WEEKEND RESET",
-  },
-  {
-    from: "Patna",
-    to: "Muzaffarpur",
-    km: 80,
-    hours: 2.5,
-    toll: 90,
-    image: "route-muzaffarpur",
-    mood: "For work, family and everything between",
-    tag: "CLOSER TO YOUR PEOPLE",
-  },
-  {
-    from: "Patna",
-    to: "Darbhanga",
-    km: 145,
-    hours: 4,
-    toll: 160,
-    image: "route-darbhanga",
-    mood: "Follow the road into Mithila",
-    tag: "CULTURE CALLING",
-  },
-  {
-    from: "Patna",
-    to: "Bhagalpur",
-    km: 240,
-    hours: 6,
-    toll: 180,
-    image: "route-bhagalpur",
-    mood: "A new day in the Silk City",
-    tag: "A LITTLE FURTHER EAST",
-  },
+  { from: "Siwan", to: "Patna", fare: 2299 },
+  { from: "Siwan", to: "Chhapra", fare: 1699 },
+  { from: "Siwan", to: "Varanasi", fare: 5399 },
+  { from: "Siwan", to: "Rajgir", fare: 4999 },
+  { from: "Maharajganj", to: "Patna", fare: 2199 },
+  { from: "Chhapra", to: "Patna", fare: 1599 },
+  { from: "Rasulpur", to: "Patna", fare: 2399 },
+  { from: "Chainpur", to: "Patna", fare: 2399 },
+  { from: "Ekma", to: "Patna", fare: 2099 },
+  { from: "Siwan", to: "Muzaffarpur", fare: 2699 },
+  { from: "Maharajganj", to: "Muzaffarpur", fare: 2699 },
+  { from: "Siwan", to: "Raxaul", fare: 2799 },
+  { from: "Maharajganj", to: "Raxaul", fare: 2799 },
+  { from: "Gopalganj", to: "Patna", fare: 2599 },
+  { from: "Mirganj", to: "Patna", fare: 2599 },
+  { from: "Barhiya", to: "Patna", fare: 2499 },
+  { from: "Siwan", to: "Gorakhpur", fare: 2799 },
+  { from: "Maharajganj", to: "Gorakhpur", fare: 2899 },
+  { from: "Siwan", to: "Darbhanga", fare: 4299 },
 ];
+export const cities = [...new Set(routes.flatMap((r) => [r.from, r.to]))].map(
+  (name) => ({
+    name,
+    state: ["Varanasi", "Gorakhpur"].includes(name) ? "Uttar Pradesh" : "Bihar",
+  }),
+);
+// Five seats includes the driver; show four passenger seats until the operator
+// confirms otherwise. Larger vehicles have no published price in the banner.
+export const advertisedCategories: Category[] = ["hatchback", "sedan"];
 export const defaultRoute = routes[0];
 export const serviceAreaLines = Array.from(
   { length: Math.ceil(cities.length / 3) },
@@ -163,8 +82,6 @@ export const fleet: {
   models: string;
   seats: number;
   bags: number;
-  rate: number;
-  localBase: number;
   description: string;
   image: string;
 }[] = [
@@ -174,8 +91,6 @@ export const fleet: {
     models: "Swift, Tiago or similar",
     seats: 4,
     bags: 1,
-    rate: 11,
-    localBase: 1099,
     description: "Small plans. Plenty of possibility.",
     image: "car-hatchback",
   },
@@ -185,8 +100,6 @@ export const fleet: {
     models: "Dzire, Aura or similar",
     seats: 4,
     bags: 2,
-    rate: 13,
-    localBase: 1299,
     description: "A little more room to unwind.",
     image: "car-sedan",
   },
@@ -196,8 +109,6 @@ export const fleet: {
     models: "Toyota Innova or similar",
     seats: 6,
     bags: 3,
-    rate: 17,
-    localBase: 1799,
     description: "Bring your favourite people.",
     image: "car-suv",
   },
@@ -207,20 +118,18 @@ export const fleet: {
     models: "Toyota Fortuner or similar",
     seats: 6,
     bags: 4,
-    rate: 22,
-    localBase: 2299,
     description: "Make the journey an occasion.",
     image: "car-premium-suv",
   },
 ];
 export const policies = {
-  label: "Draft demo policy · subject to client confirmation",
+  label: "Published route fares · Team confirmation required",
   cancellation:
     "Contact the booking team to request a cancellation. Applicable cancellation terms must be agreed with you when the team confirms your fare; submitting a request does not reserve a vehicle.",
   inclusions:
-    "AC cab, the displayed distance or rental package, a sample tax amount, and the listed toll estimate and driver allowance.",
+    "The advertised one-way route fare for a five-seater AC vehicle and driver. The team confirms the vehicle, passenger capacity, availability and final fare before reserving a cab.",
   exclusions:
-    "Parking, extra stops, extra kilometres, overtime, and changes to actual tolls are not included. Real charges require a confirmed provider quote.",
+    "Toll tax and parking are payable separately, as stated in the client banner. Extra stops and other changes require a revised quote. The banner does not specify tax treatment; the team must clarify it before confirmation.",
 };
 export const faqs = [
   {
@@ -229,37 +138,27 @@ export const faqs = [
   },
   {
     q: "Where is JourneyCab available?",
-    a: `Our service area is Bihar only. Our current city list includes ${cities.map((city) => city.name).join(", ")}. Intercity estimates cover ${routes.length} featured routes and their reverse journeys; local rentals work in each listed Bihar city. Trips outside Bihar are not available.`,
+    a: `We list ${routes.length} advertised one-way routes across Bihar and selected routes from Siwan and Maharajganj to Uttar Pradesh. Varanasi and Gorakhpur are supported only on the published routes. Prices apply in the direction shown; reverse trips and other city pairs need a separate quote.`,
   },
   {
     q: "How is my fare calculated?",
-    a: "Initial estimates use the route distance, vehicle category, a sample 5% tax, a toll estimate and any driver allowance. Round trips use a 250 km per day minimum. All figures are illustrative, and the final fare is agreed with you by our team.",
+    a: "One-way fares are taken directly from the client’s route banner for a five-seater AC car. No per-kilometre multiplier or sample tax is added. The team agrees the final fare and tax treatment with you before confirmation. SUV, round-trip and local-rental prices have not been supplied and cannot be booked online yet.",
   },
   {
     q: "Are tolls and parking included?",
-    a: "The displayed total includes a clearly itemised toll estimate for intercity trips. Actual tolls may differ. Parking, extra stops and local-rental tolls are excluded and would need confirmation.",
+    a: "No. Toll tax and parking are payable separately. The displayed route fare excludes both, as stated in the banner.",
   },
   {
-    q: "How much luggage can I bring?",
-    a: "Each vehicle card shows a sample suitcase capacity, from one bag in a hatchback to four in a premium SUV. Oversized items and full passenger loads may affect space; confirm those with the provider.",
+    q: "How many passengers can travel?",
+    a: "The banner advertises a five-seater AC vehicle. We currently allow up to four passengers, leaving one seat for the driver. Vehicle model, luggage space and passenger capacity must be confirmed by the team.",
   },
   { q: "What if I need to cancel?", a: policies.cancellation },
   {
     q: "Can I change my pickup details?",
-    a: "Yes. Use Edit journey or the back button before confirming, and your current selections will be retained. In a real service, changes would be subject to availability and a revised fare.",
+    a: "Use Edit journey or the back button before submitting. After submission, contact the team; changes are subject to availability and a revised fare.",
   },
   {
-    q: "How do round trips work?",
-    a: "Choose your outward date and return date. The initial estimate covers both directions and applies a 250 km daily minimum plus a daily driver allowance. The return pickup time would be agreed with the provider.",
-  },
-  {
-    q: "What is included in a local rental?",
-    a: "Choose 4 hours / 40 km or 8 hours / 80 km in any listed Bihar city. Both limits apply. Additional distance, overtime, parking and tolls are excluded from the sample package and need a provider quote.",
+    q: "Can I book a return trip or local rental?",
+    a: "The banner only supplies one-way prices. Round trips, reverse journeys, local rentals and larger vehicles require a separate quote and are not currently priced for online booking.",
   },
 ];
-
-export const fareRules = {
-  taxRate: 0.05,
-  roundTripMinimumKmPerDay: 250,
-  driverAllowancePerDay: 300,
-};

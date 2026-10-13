@@ -13,8 +13,8 @@ const staff = "operator@example.test";
 const sample = () => ({
   journey: {
     mode: "oneway",
-    from: "Patna",
-    to: "Gaya",
+    from: "Siwan",
+    to: "Patna",
     date: "2099-10-13",
     time: "09:00",
     returnDate: "2099-10-15",
@@ -77,7 +77,7 @@ test("Requests persist after restart; estimates are server-derived and tokens re
       status: "confirmed",
       finalFare: 1,
     });
-    assert.equal(store.get(reference).estimate.total, 1465);
+    assert.equal(store.get(reference).estimate.total, 2299);
     assert.equal(store.get(reference).status, "requested");
     store.close();
     store = new Store(file);
@@ -101,7 +101,7 @@ test("Idempotent request retries cannot duplicate or overwrite a submitted reque
     assert.equal(s.create(input).reference, first.reference);
     assert.equal(s.list().length, 1);
     assert.throws(
-      () => s.create({ ...input, category: "suv" }),
+      () => s.create({ ...input, category: "hatchback" }),
       /submission has changed/,
     );
     assert.throws(
@@ -113,7 +113,7 @@ test("Idempotent request retries cannot duplicate or overwrite a submitted reque
     s.close();
   }
 });
-test("Server rejects interstate, invalid dates, unsupported categories, missing consent and malformed bodies", () => {
+test("Server rejects unsupported routes, invalid dates, unsupported categories, missing consent and malformed bodies", () => {
   const s = new Store(":memory:");
   try {
     const input = sample();
@@ -267,24 +267,23 @@ test("Driver collisions are blocked, category must match, cancellation releases 
     s.close();
   }
 });
-test("Local requests persist without a destination and respect the selected package", () => {
+test("The API accepts advertised UP routes and rejects unpriced services", () => {
   const s = new Store(":memory:");
   try {
     const data = sample();
-    data.journey = {
-      ...data.journey,
-      mode: "local",
-      from: "Darbhanga",
-      to: "",
-      package: "8h80",
-    };
-    data.passenger.drop = "";
-    const b = s.get(s.create(data).reference);
-    assert.equal(b.estimate.total, 2728);
-    assert.equal(b.journey.to, "");
-  } finally {
-    s.close();
-  }
+    const b = s.get(s.create({ ...data, journey: { ...data.journey, to: "Varanasi" } }).reference);
+    assert.equal(b.estimate.total, 5399);
+    const row = s.db.prepare("SELECT starts, ends FROM bookings WHERE reference=?").get(b.reference)!;
+    assert.equal(Number(row.ends) - Number(row.starts), 24 * 3600_000);
+    for (const journey of [
+      { ...data.journey, mode: "local", to: "", package: "8h80" },
+      { ...data.journey, mode: "roundtrip" },
+      { ...data.journey, from: "Varanasi", to: "Siwan" },
+      { ...data.journey, from: "Patna", to: "Gorakhpur" },
+    ]) assert.throws(() => s.create({ ...sample(), journey }), /not supported/);
+    for (const category of ["suv", "premium-suv"])
+      assert.throws(() => s.create({ ...sample(), category }), /not supported/);
+  } finally { s.close(); }
 });
 test("SMS provider is optional; accepted is distinct from delivered; duplicate sends are blocked", async () => {
   const s = new Store(":memory:");

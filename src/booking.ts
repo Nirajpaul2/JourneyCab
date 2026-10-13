@@ -1,11 +1,10 @@
 import {
   cities,
   defaultRoute,
-  fareRules,
+  advertisedCategories,
   fleet,
   packages,
   routes,
-  serviceArea,
 } from "./config";
 import type { Category, Journey, Passenger } from "./config";
 export const money = (value: number) =>
@@ -49,10 +48,10 @@ export const emptyPassenger = (): Passenger => ({
 export function validateJourney(j: Journey, now = new Date()) {
   const errors: Record<string, string> = {};
   if (!cities.some((c) => c.name === j.from))
-    errors.from = `Choose a pickup city in ${serviceArea.state} from the list.`;
+    errors.from = "Choose a pickup city from the service-area list.";
   if (j.mode !== "local") {
     if (!cities.some((c) => c.name === j.to))
-      errors.to = `Choose a destination in ${serviceArea.state} from the list.`;
+      errors.to = "Choose a destination from the service-area list.";
     else if (j.from === j.to)
       errors.to = "Choose a different destination city.";
   }
@@ -88,8 +87,7 @@ export function validatePassenger(p: Passenger, mode: Journey["mode"]) {
 export const findRoute = (j: Journey) =>
   routes.find(
     (r) =>
-      (r.from === j.from && r.to === j.to) ||
-      (r.to === j.from && r.from === j.to),
+      r.from === j.from && r.to === j.to,
   );
 export const tripDays = (j: Journey) =>
   j.mode === "roundtrip"
@@ -102,41 +100,21 @@ export const tripDays = (j: Journey) =>
       )
     : 1;
 export function calculateFare(j: Journey, category: Category) {
-  // Enforce coverage in the estimator as well as in the form.
-  if (!cities.some((city) => city.name === j.from)) return null;
-  if (
-    j.mode !== "local" &&
-    (!cities.some((city) => city.name === j.to) || j.from === j.to)
-  )
-    return null;
-  const cab = fleet.find((c) => c.id === category);
-  if (!cab) return null;
+  // Never infer a reverse, larger-vehicle, round-trip or rental price from
+  // the banner. The same catalog is used by the frontend and booking API.
+  if (j.mode !== "oneway" || !advertisedCategories.includes(category)) return null;
+  if (!fleet.some((cab) => cab.id === category)) return null;
   const route = findRoute(j);
-  const pack = packages.find((p) => p.id === j.package);
-  if (!pack) return null;
-  if (j.mode !== "local" && !route) return null;
-  const days = tripDays(j);
-  const km =
-    j.mode === "local"
-      ? pack.km
-      : j.mode === "roundtrip"
-        ? Math.max(route!.km * 2, fareRules.roundTripMinimumKmPerDay * days)
-        : route!.km;
-  const base =
-    j.mode === "local" ? cab.localBase * (pack.hours / 4) : km * cab.rate;
-  const driver =
-    j.mode === "roundtrip" ? fareRules.driverAllowancePerDay * days : 0;
-  const tax = Math.round((base + driver) * fareRules.taxRate);
-  const toll =
-    j.mode === "local" ? 0 : route!.toll * (j.mode === "roundtrip" ? 2 : 1);
+  if (!route) return null;
   return {
-    base,
-    driver,
-    tax,
-    toll,
-    total: base + driver + tax + toll,
-    km,
-    days,
+    base: route.fare,
+    driver: 0,
+    tax: 0,
+    toll: 0,
+    total: route.fare,
+    // Retained for stored-booking compatibility; no distance is advertised.
+    km: 0,
+    days: 1,
   };
 }
 export type Fare = NonNullable<ReturnType<typeof calculateFare>>;

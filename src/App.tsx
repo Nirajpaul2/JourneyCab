@@ -24,13 +24,11 @@ import {
   packages,
   policies,
   routes,
-  serviceArea,
 } from "./config";
 import type { Category, Journey, Passenger, TripMode } from "./config";
 import {
   calculateFare,
   emptyPassenger,
-  findRoute,
   initialJourney,
   modeLabel,
   money,
@@ -146,11 +144,10 @@ export default function App() {
   };
   const cab = fleet.find((c) => c.id === selected)!;
   const fare = calculateFare(journey, selected);
-  const route = findRoute(journey);
-  const available = journey.mode === "local" || route;
+  const available = fleet.some((c) => calculateFare(journey, c.id));
   const filtered = fleet
     .filter(
-      (c) => (category === "all" || c.id === category) && c.seats >= seats,
+      (c) => (category === "all" || c.id === category) && c.seats >= seats && calculateFare(journey, c.id),
     )
     .sort((a, b) => {
       const difference =
@@ -303,7 +300,7 @@ export default function App() {
                     </div>
                     <span className="soft-badge">
                       <ShieldCheck size={16} />
-                      Illustrative fares, clearly explained
+                      Published one-way AC fares
                     </span>
                   </div>
                   {editing ? (
@@ -410,9 +407,8 @@ export default function App() {
                         <Info size={20} />
                         <h3>A clear starting point</h3>
                         <p>
-                          Estimates include sample tax and itemised tolls. Final
-                          availability and charges would be confirmed by the
-                          provider.
+                          Published fares exclude toll tax and parking. Our team
+                          confirms availability, tax treatment and the final fare.
                         </p>
                       </div>
                     </aside>
@@ -421,7 +417,7 @@ export default function App() {
                         <div className="state-panel">
                           <LoaderCircle className="spinner" size={36} />
                           <h2>Finding your kind of ride…</h2>
-                          <p>Preparing your sample cab options.</p>
+                          <p>Preparing your cab options.</p>
                         </div>
                       ) : status === "error" ? (
                         <div className="state-panel">
@@ -442,18 +438,19 @@ export default function App() {
                       ) : !available ? (
                         <div className="state-panel">
                           <MapPin size={38} />
-                          <h2>A road we haven’t mapped yet.</h2>
+                          <h2>No published fare for this journey.</h2>
                           <p>
-                            This demo includes {routes.length} intercity routes
-                            within {serviceArea.state} and their reverse
-                            journeys. Try a featured Bihar route, or explore a
-                            local rental in a listed city.
+                            We list {routes.length} one-way routes in the advertised
+                            direction only. Reverse trips, other city pairs,
+                            round trips and local rentals need a separate quote
+                            and are not available for online booking yet.
                           </p>
                           <button
                             className="button primary"
                             onClick={() => {
                               const next = {
                                 ...journey,
+                                mode: "oneway" as const,
                                 from: defaultRoute.from,
                                 to: defaultRoute.to,
                               };
@@ -495,8 +492,8 @@ export default function App() {
                               <Search size={36} />
                               <h2>A little more room?</h2>
                               <p>
-                                No sample cabs match these filters. Clear them
-                                to see every option.
+                                The published fare covers five-seater AC cars only.
+                                Clear filters to see available car categories.
                               </p>
                               <button
                                 className="button primary"
@@ -542,19 +539,13 @@ export default function App() {
                                       <Amenities category={c.id} />
                                       <span className="cab-distance">
                                         <Check size={13} />
-                                        {f.km} km{" "}
-                                        {journey.mode === "local"
-                                          ? "package"
-                                          : "fare basis"}
-                                        {journey.mode === "roundtrip"
-                                          ? ` · ${f.days} day${f.days > 1 ? "s" : ""}`
-                                          : ""}
+                                        Five-seater AC · Up to 4 passengers
                                       </span>
                                     </div>
                                     <div className="cab-price">
-                                      <small>Estimated total</small>
+                                      <small>One-way route fare</small>
                                       <strong>{money(f.total)}</strong>
-                                      <span>Includes sample tax</span>
+                                      <span>Tolls & parking extra</span>
                                       <button
                                         className="button primary"
                                         onClick={() => {
@@ -583,14 +574,9 @@ export default function App() {
                             })
                           )}
                           <p className="result-disclaimer">
-                            {journey.mode === "roundtrip"
-                              ? "Round trips use the greater of route distance × 2 or 250 km per day, plus ₹300 driver allowance per day. "
-                              : ""}
-                            {journey.mode === "local"
-                              ? "Both package limits apply. Extra distance, overtime, tolls and parking are excluded. "
-                              : ""}
-                            Illustrative estimates only. Vehicle photos and
-                            models are representative.
+                            Published one-way AC fares. Tolls and parking are
+                            extra. Vehicle photos and models are representative;
+                            the team confirms the final vehicle and charges.
                           </p>
                         </>
                       )}
@@ -824,12 +810,9 @@ export default function App() {
                       <Amenities category={selected} />
                       <FareBreakdown fare={fare} expanded />
                       <p className="fare-caveat">
-                        Illustrative total · {fare.km} km{" "}
-                        {journey.mode === "local" ? "package" : "fare basis"}
-                        {journey.mode === "roundtrip"
-                          ? ` · ${fare.days} days (250 km/day minimum)`
-                          : ""}
-                        . Parking and additional usage excluded.
+                        Published one-way fare for a five-seater AC car. Toll
+                        tax and parking are payable separately. Final charges
+                        and vehicle availability require team confirmation.
                       </p>
                       <button
                         type="button"
@@ -916,7 +899,7 @@ export default function App() {
                     <div className="ticket-total">
                       <span>
                         Estimated journey total
-                        <small>Illustrative fare · no payment collected</small>
+                        <small>Published route fare · tolls & parking extra</small>
                       </span>
                       <strong>{money(fare.total)}</strong>
                     </div>
@@ -1038,13 +1021,13 @@ export default function App() {
             <p>{policies.exclusions}</p>
             <h3>If plans change</h3>
             <p>{policies.cancellation}</p>
-            <h3>How this demo calculates fares</h3>
+            <h3>How route fares are set</h3>
             <p>
-              One way: sample distance × category rate. Round trip: the greater
-              of twice the route distance or 250 km per calendar day, plus ₹300
-              driver allowance per day. Local: a fixed 4-hour / 40 km or 8-hour
-              / 80 km package. A sample 5% tax applies to base fare and driver
-              allowance; toll estimates are added separately.
+              These are the client’s published one-way fares, for the direction
+              shown and a five-seater AC car. We do not add an invented tax,
+              distance charge or return fare. Toll tax and parking are extra.
+              The team agrees the final charges and tax treatment with you.
+              Larger vehicles, round trips and local rentals need separate pricing.
             </p>
             <button className="button primary" onClick={() => setDialog(null)}>
               Got it
