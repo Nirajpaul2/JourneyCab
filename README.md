@@ -1,10 +1,10 @@
 # JourneyCab
 
-An original, responsive Bihar-only cab-booking experience built with React 19, TypeScript, Vite, and Tailwind CSS 4. JourneyCab is a temporary brand. All interactions and fare calculations run in the browser.
+A Bihar-only ride-request service with local driver partners and manual staff confirmation. The React/TypeScript frontend is backed by a Node/SQLite API. This first release is implemented and tested locally; production hosting, real fares, operator details and messaging credentials still need configuration.
 
 ## Run locally
 
-Requires Node.js 22+ and npm.
+Requires Node.js 22.18+ and npm.
 
 ```sh
 git clone https://github.com/Nirajpaul2/JourneyCab.git
@@ -13,68 +13,54 @@ npm ci
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://127.0.0.1:5173`).
+The frontend opens at `http://127.0.0.1:5173`; Vite proxies `/api` to the Node server on port 3001. The default database is `data/journeycab.sqlite` and is excluded from Git. Use fictional passenger details during development. This is now persistent storage: refreshing the browser does not delete submitted requests.
 
 ```sh
-npm test         # fare, date, route and passenger-validation tests
-npm run build    # TypeScript checks and production bundle in dist/
-npm run preview  # serve the production bundle locally
+npm test         # Fare, coverage, persistence, workflow, auth and notification tests
+npm run build    # Frontend + backend TypeScript checks, Vite production bundle
+npm start        # API + built frontend; see DEPLOYMENT.md for origin/TLS configuration
 ```
 
-The production build is static and can be hosted by any static web host. `.openai/hosting.json` holds the private Sites deployment identity. No API keys or environment variables are needed.
+`npm run preview` serves only the frontend bundle; use the Node server for full workflow testing. `.env.example` documents available settings. Environment files must be explicitly loaded; see the deployment guide.
 
-## Bihar-only service area
+## Staff setup
 
-All pickup and destination selectors are restricted to Bihar. The current demo catalog is **Patna, Gaya, Bodh Gaya, Rajgir, Nalanda, Muzaffarpur, Darbhanga, Bhagalpur, Purnia, Begusarai, Hajipur and Arrah**. Interstate journeys are not available. Both validation and fare calculation reject out-of-state pickup/destination values, including out-of-state local rentals.
+There is no seeded/default account. See [DEPLOYMENT.md](DEPLOYMENT.md#create-and-manage-staff-accounts) to create a staff account securely using the management command, then sign in at `/admin`.
 
-Featured intercity routes are **Patna → Gaya, Bodh Gaya, Rajgir, Muzaffarpur, Darbhanga and Bhagalpur**, plus all reverse journeys. Other listed-city pairs intentionally have an empty-results state until their sample route data is added. All 12 cities support both local rental packages. Distances, travel times and tolls are illustrative and require provider confirmation.
+## First-release workflow
 
-The Bihar Tourism [destination directory](https://tourism.bihar.gov.in/in/en/home/destinations) and [Gaya district page](https://gaya.nic.in/places-of-interest/) informed destination context. Image sources and licenses are recorded separately in `ASSET_CREDITS.md`.
+1. Customer chooses One Way, Round Trip or Local, selects a category, enters contact and address details, and requests a ride.
+2. The API saves a **pending request**, returning a reference and private status link. No automatic reservation or payment occurs.
+3. Staff confirms availability with partner drivers, agrees the fare with the customer and records its inclusions.
+4. Staff assigns an active driver in the requested category; overlapping bookings are rejected.
+5. Staff confirms the booking. The customer status page displays the agreed fare and assigned driver. A persistent notification is queued.
+6. With configured SMS credentials, the server submits the message to the provider. Without them, staff contacts the customer manually and records the outcome. SMS acceptance is distinct from delivery.
 
-## A short client walkthrough
+The dashboard also supports driver registration/activation, request search/filtering, audit history, cancellation/decline and completion. Authentication, session revocation, same-origin write checks, input limits, rate limits, idempotent submission and version-checked staff updates are enforced by the server.
 
-1. Start on the homepage. Introduce the original ivory, navy and saffron visual design, the three trip modes, the destination cards, fleet, sample stories and FAQs. Mention that JourneyCab is a temporary brand.
-2. Leave **Patna → Gaya**, tomorrow at **09:00 IST**, and choose **Search Cabs**. Change price sorting, inspect the **Sedan**, and expand its fare breakdown. The one-way sedan estimate is **₹1,465**: base ₹1,300 + sample tax ₹65 + toll estimate ₹100.
-3. Choose **Select Cab**. Enter sample details: **Alex Kumar**, **9876543210**, optional **alex@example.com**, pickup **12 Example Road, near Central Park**, drop **42 Sample Avenue, near City Museum**. Go back to cab options and select again to show that the details stay intact.
-4. Choose **Confirm Demo Booking**. Point out the generated reference and the explicit message: **“Demo booking only. No cab has been reserved.”** Use **Start a New Booking** to clear the sample details.
-5. Try **Round Trip** with a return date two days after departure. For the default route, the sedan estimate is **₹11,383**, based on three inclusive calendar days, the 250 km/day minimum, driver allowance, sample tax and return toll estimate.
-6. Try **Local** in Patna, select **8 hours / 80 km**, and choose Sedan. The estimate is **₹2,728**. Only the pickup address is required for a local rental.
-7. On a phone-sized window, demonstrate the compact menu, booking-first layout, route selection, FAQ accordion and the same complete booking journey.
+## Bihar coverage and estimates
 
-## Edge cases for a demonstration
+Pickup cities: **Patna, Gaya, Bodh Gaya, Rajgir, Nalanda, Muzaffarpur, Darbhanga, Bhagalpur, Purnia, Begusarai, Hajipur and Arrah**.
 
-- Type an out-of-state city such as Ranchi: no city option appears, and search is blocked.
-- Choose the same pickup/destination city: the form shows an inline validation message.
-- Pick a past departure, or a return date before departure: the form blocks the search.
-- Choose Patna → Nalanda: there is an intentional empty-results view, with a working action to try Patna → Gaya. Only the six featured intercity pairs and their reverses have mock fares.
-- Filter **Hatchback** and **6 passengers**: an empty filter state offers **Clear filters**.
-- Open `/?scenario=error`, then search: a simulated error appears once. **Try again** recovers without losing the journey.
-- Search loading is intentionally shown for 650 ms. There is no external search request.
-- Open **Photography & image credits** in the footer to inspect local photo sources and licenses.
+Featured intercity pairs: **Patna ↔ Gaya, Bodh Gaya, Rajgir, Muzaffarpur, Darbhanga and Bhagalpur**. All 12 cities support local 4-hour/40-km and 8-hour/80-km requests. Other intercity pairs show the unsupported-route state. Out-of-state cities are rejected by both form and API validation.
 
-## Editing the demo
+Initial sample Sedan estimates: Patna → Gaya one way ₹1,465; three-day round trip ₹11,383; local 8 hours / 80 km ₹2,728. These remain illustrative until operational pricing is supplied. Staff must agree a final fare with the customer before confirming. Images and font are bundled locally; preserve [ASSET_CREDITS.md](ASSET_CREDITS.md) and font licensing.
 
-- `src/config.ts`: brand name/wordmark, Bihar coverage and cities, routes, fleet, rental packages, category rates, tax/driver/minimum-distance rules, FAQs, and draft policies.
-- `src/booking.ts`: deterministic estimates and validation. Keep tax/policy labels aligned if changing the pricing model.
-- `src/components/BookingForm.tsx`: trip modes and keyboard-accessible searchable city controls.
-- `src/components/Home.tsx`: homepage sections and route-prefill actions.
-- `src/components/Common.tsx`: shared branding, journey details, fare breakdown, stepper and footer.
-- `src/App.tsx`: in-memory flow, results, review, confirmation, and dialogs.
-- `src/styles.css`: responsive styling, focus states, motion preferences, and self-hosted Manrope.
-- `src/image-credits.json` and `ASSET_CREDITS.md`: image attribution. Retain licenses and attribution when redistributing the photos.
-- `index.html` and `public/favicon.svg`: browser metadata and brand mark.
+## Source map
 
-## Limitations and privacy
+- `src/App.tsx`, `src/components/Home.tsx`, `src/components/BookingForm.tsx`: customer journey and request submission.
+- `src/components/Operations.tsx`: authenticated staff desk and partner register.
+- `src/components/Tracking.tsx`: private customer status and confirmed driver details.
+- `src/config.ts`, `src/booking.ts`: coverage, initial estimates and shared validation.
+- `server/store.ts`: SQLite schema, request idempotency, authentication, state transitions and audit records.
+- `server/app.ts`: HTTP API, authorization, origin checks, rate limiting and static frontend delivery.
+- `server/notifications.ts`: optional SMS provider adapter with explicit pending/accepted/failed/unknown states.
+- `server/index.ts`: server lifecycle and notification worker; `server/manage.ts`: account creation and consistent backups.
 
-- No cab inventory, reservations, payments, driver assignment, accounts, emails, SMS, analytics or external booking connections exist.
-- Passenger details are held in React memory only. They are never put in URLs, localStorage, sessionStorage, cookies, or submitted to a service. Refreshing or starting a new booking clears them. Use fictional information for demonstrations.
-- Only the six featured intercity routes and their reverses are supported; local rentals work in all 12 listed Bihar cities.
-- All prices, distances, durations, capacities, sample tax and policies are illustrative, requiring client/provider validation. Daily minimums include both departure and return dates. Return pickup times would be agreed with a real provider.
-- Local package limits apply to both time and distance. Parking, local tolls, extra stops, overtime and additional kilometres are excluded. Vehicle photos and models represent categories, not live availability.
-- Sample stories are explicitly fictional; no verified ratings, customer counts or operational guarantees are claimed.
-- All images and the font are bundled locally. Creative Commons images retain their stated licenses. The Manrope font license is in `public/fonts/OFL-Manrope.txt`.
-- The reference site's business model and form structure were reviewed; its branding, copy, testimonials and statistics were not reused. No reference booking service is contacted.
+## Deployment and limits
 
-## Verification
+Read [DEPLOYMENT.md](DEPLOYMENT.md) before going live. The server requires a single Node process and persistent disk; a static-only deployment is insufficient. No production infrastructure, SMS credentials, real driver records or staff credentials are included. Automatic dispatch, live tracking, payments, customer accounts/OTP, WhatsApp/email delivery and multi-role staff access are outside this release.
 
-See `VERIFICATION.md` for the completed browser and calculation checks.
+The old Sites project continues to return `Sites project not found`; it has not been updated. The preserved hosting manifest identifies that historical static demo, not the new backend deployment.
+
+See [VERIFICATION.md](VERIFICATION.md) for test evidence and verification limits.

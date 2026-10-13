@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "types": ["node"] },
+  "include": [
+    "server",
+    "src/booking.ts",
+    "src/config.ts",
+    "src/operations-types.ts"
+  ]
+}

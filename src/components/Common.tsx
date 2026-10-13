@@ -173,7 +173,8 @@ export function DemoNotice() {
     <div className="demo-notice">
       <Info size={16} />
       <span>
-        Client demo · All fares are illustrative. No real bookings or payments.
+        Initial estimates only. Our team confirms availability and agrees your
+        final fare before reserving a cab.
       </span>
     </div>
   );
@@ -181,7 +182,7 @@ export function DemoNotice() {
 export function Stepper({ step }: { step: number }) {
   return (
     <ol className="stepper" aria-label="Booking progress">
-      {["Your journey", "Choose a cab", "Trip review", "Confirmation"].map(
+      {["Your journey", "Choose a cab", "Trip review", "Request received"].map(
         (s, i) => (
           <li
             key={s}
@@ -217,6 +218,9 @@ export function Footer({
         </div>
         <div>
           <h3>Explore {brand.name}</h3>
+          <a href="/track">Track a request</a>
+          <a href="/admin">Staff sign in</a>
+          <a href="/privacy">Privacy & booking contact</a>
           <button onClick={() => navigate("services")}>Our services</button>
           <button onClick={() => navigate("routes")}>Popular routes</button>
           <button onClick={() => navigate("fleet")}>Our fleet</button>
@@ -237,7 +241,7 @@ export function Footer({
           © {new Date().getFullYear()} {brand.name}. A concept for the road
           ahead.
         </span>
-        <span>Demonstration website · No cab has been reserved.</span>
+        <span>Partner drivers · Confirmed by our team.</span>
       </div>
     </footer>
   );

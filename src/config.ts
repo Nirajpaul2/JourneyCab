@@ -2,7 +2,7 @@ export const brand = {
   name: "JourneyCab",
   wordmark: ["journey", "cab"],
   tagline: "Enjoy the journey.",
-  demoNotice: "Demo booking only. No cab has been reserved.",
+  requestNotice: "Your request is pending team confirmation.",
 };
 export type TripMode = "oneway" | "roundtrip" | "local";
 export type Category = "hatchback" | "sedan" | "suv" | "premium-suv";
@@ -216,7 +216,7 @@ export const fleet: {
 export const policies = {
   label: "Draft demo policy · subject to client confirmation",
   cancellation:
-    "No cancellation fee applies in this simulation. Real cancellation terms and any cut-off times must be confirmed by the service provider before launch.",
+    "Contact the booking team to request a cancellation. Applicable cancellation terms must be agreed with you when the team confirms your fare; submitting a request does not reserve a vehicle.",
   inclusions:
     "AC cab, the displayed distance or rental package, a sample tax amount, and the listed toll estimate and driver allowance.",
   exclusions:
@@ -224,12 +224,16 @@ export const policies = {
 };
 export const faqs = [
   {
+    q: "When is my booking confirmed?",
+    a: "After you submit a ride request, our team checks availability with local driver partners and agrees the final fare with you. We then assign a driver and confirm your booking. Follow your private status link for updates; a submitted request alone does not reserve a cab.",
+  },
+  {
     q: "Where is JourneyCab available?",
-    a: `Our service area is Bihar only. The demo lists ${cities.map((city) => city.name).join(", ")}. Intercity estimates cover ${routes.length} featured routes and their reverse journeys; local rentals work in each listed Bihar city. Trips outside Bihar are not available.`,
+    a: `Our service area is Bihar only. Our current city list includes ${cities.map((city) => city.name).join(", ")}. Intercity estimates cover ${routes.length} featured routes and their reverse journeys; local rentals work in each listed Bihar city. Trips outside Bihar are not available.`,
   },
   {
     q: "How is my fare calculated?",
-    a: "This demo uses the route distance, vehicle category, a sample 5% tax, a toll estimate and any driver allowance. Round trips use a 250 km per day minimum. All figures are illustrative, and a live quote would need provider confirmation.",
+    a: "Initial estimates use the route distance, vehicle category, a sample 5% tax, a toll estimate and any driver allowance. Round trips use a 250 km per day minimum. All figures are illustrative, and the final fare is agreed with you by our team.",
   },
   {
     q: "Are tolls and parking included?",
@@ -246,7 +250,7 @@ export const faqs = [
   },
   {
     q: "How do round trips work?",
-    a: "Choose your outward date and return date. This demo estimates both directions and applies a 250 km daily minimum plus a daily driver allowance. The return pickup time would be agreed with the provider.",
+    a: "Choose your outward date and return date. The initial estimate covers both directions and applies a 250 km daily minimum plus a daily driver allowance. The return pickup time would be agreed with the provider.",
   },
   {
     q: "What is included in a local rental?",

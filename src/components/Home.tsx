@@ -337,8 +337,8 @@ export default function Home({
                 copy: "Add the little details that make it your journey.",
               },
               {
-                title: "Travel",
-                copy: "In this demo, see your simulated confirmation.",
+                title: "We confirm your ride",
+                copy: "Our team agrees the fare, assigns a partner driver, and confirms your ride.",
               },
             ].map((s, i) => (
               <div className="how-step" key={s.title}>

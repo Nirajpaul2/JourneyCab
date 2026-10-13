@@ -19,7 +19,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  brand,
   defaultRoute,
   fleet,
   packages,
@@ -51,6 +50,7 @@ import {
   Stepper,
 } from "./components/Common";
 import imageCredits from "./image-credits.json";
+import { api, newTrackingToken, trackingUrl } from "./api";
 type Stage = "home" | "results" | "review" | "confirmation";
 export default function App() {
   const [stage, setStage] = useState<Stage>("home");
@@ -66,6 +66,13 @@ export default function App() {
   const [sort, setSort] = useState("low");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [confirmation, setConfirmation] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const requestIdentity = useRef({
+    requestKey: crypto.randomUUID(),
+    trackingToken: newTrackingToken(),
+  });
   const [dialog, setDialog] = useState<"credits" | "policy" | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -102,6 +109,16 @@ export default function App() {
     }, 40);
   };
   const search = (value = journey) => {
+    if (confirmation) {
+      requestIdentity.current = {
+        requestKey: crypto.randomUUID(),
+        trackingToken: newTrackingToken(),
+      };
+      setConfirmation("");
+      setPassenger(emptyPassenger());
+      setConsent(false);
+      setCopied(false);
+    }
     setJourney(value);
     setEditing(false);
     setErrors({});
@@ -146,6 +163,12 @@ export default function App() {
     setPassenger(emptyPassenger());
     setErrors({});
     setConfirmation("");
+    setConsent(false);
+    setCopied(false);
+    requestIdentity.current = {
+      requestKey: crypto.randomUUID(),
+      trackingToken: newTrackingToken(),
+    };
     setSelected("sedan");
     setStatus("ready");
     setCategory("all");
@@ -156,11 +179,13 @@ export default function App() {
     setPassenger((p) => ({ ...p, [key]: value }));
     setErrors((e) => ({ ...e, [key]: "" }));
   };
-  const confirm = () => {
+  const confirm = async () => {
+    if (submitting) return;
     const next = validatePassenger(passenger, journey.mode);
     if (Object.keys(validateJourney(journey)).length)
       next.journey =
         "Your departure has passed or your journey needs updating. Go back and edit your journey.";
+    if (!consent) next.consent = "Please consent to booking-related contact.";
     setErrors(next);
     if (Object.keys(next).length) {
       setTimeout(
@@ -172,8 +197,28 @@ export default function App() {
       );
       return;
     }
-    setConfirmation(`JC-DEMO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`);
-    setStage("confirmation");
+    setSubmitting(true);
+    try {
+      const receipt = await api<{ reference: string }>("/api/bookings", {
+        method: "POST",
+        body: JSON.stringify({
+          journey,
+          passenger,
+          category: selected,
+          consent,
+          ...requestIdentity.current,
+        }),
+      });
+      setConfirmation(receipt.reference);
+      setStage("confirmation");
+    } catch (error) {
+      setErrors({
+        submission:
+          (error as Error).message || "Unable to submit. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <>
@@ -205,7 +250,7 @@ export default function App() {
             ))}
           </nav>
           <div className="header-actions">
-            <span className="demo-tag">CLIENT DEMO</span>
+            <span className="demo-tag">TEAM CONFIRMED</span>
             <button
               className="button primary header-book"
               onClick={() => goHome()}
@@ -569,7 +614,10 @@ export default function App() {
                       <h1 ref={headingRef} tabIndex={-1}>
                         Make this journey yours.
                       </h1>
-                      <p>A few details, and your demo booking is ready.</p>
+                      <p>
+                        Request your ride. Our team will confirm availability
+                        and your fare.
+                      </p>
                     </div>
                   </div>
                   <form
@@ -577,7 +625,7 @@ export default function App() {
                     noValidate
                     onSubmit={(e) => {
                       e.preventDefault();
-                      confirm();
+                      void confirm();
                     }}
                   >
                     <div className="review-form">
@@ -587,8 +635,8 @@ export default function App() {
                           along?
                         </h2>
                         <p className="muted">
-                          Add the lead passenger’s details. Use sample
-                          information for this demo.
+                          Add the lead passenger’s details so our team can
+                          arrange your ride.
                         </p>
                         <div className="passenger-fields">
                           {[
@@ -713,11 +761,38 @@ export default function App() {
                       <div className="privacy-note">
                         <ShieldCheck size={20} />
                         <p>
-                          Your details stay in this page’s memory. Nothing is
-                          sent, saved to storage, or used to contact you.
-                          Refreshing clears them.
+                          Your request is saved securely for our booking team.
+                          We use these details to agree your fare, arrange a
+                          partner driver, and send booking updates. A request is
+                          not a confirmed reservation.
                         </p>
                       </div>
+                      <label className="ops-check request-consent">
+                        <input
+                          type="checkbox"
+                          checked={consent}
+                          onChange={(e) => setConsent(e.target.checked)}
+                        />
+                        <span>
+                          I agree to be contacted about this ride and to sharing
+                          the necessary pickup and contact details with the
+                          assigned driver.{" "}
+                          <a href="/privacy" target="_blank" rel="noreferrer">
+                            How we use your details
+                          </a>
+                        </span>
+                      </label>
+                      {errors.consent && (
+                        <p className="error-banner" role="alert">
+                          {errors.consent}
+                        </p>
+                      )}
+                      {errors.submission && (
+                        <p className="error-banner" role="alert">
+                          {errors.submission} Your request is not confirmed.
+                          Retrying the same request will not create a duplicate.
+                        </p>
+                      )}
                       {errors.journey && (
                         <p className="error-banner" role="alert">
                           {errors.journey}
@@ -767,13 +842,16 @@ export default function App() {
                       <button
                         className="button primary confirm-button"
                         type="submit"
+                        disabled={submitting}
                       >
-                        Confirm Demo Booking
+                        {submitting
+                          ? "Submitting request…"
+                          : "Request this ride"}
                         <ArrowRight size={18} />
                       </button>
                       <small className="no-payment">
                         <ShieldCheck size={13} />
-                        No payment. No real reservation.
+                        No payment now. Team confirmation required.
                       </small>
                     </aside>
                   </form>
@@ -786,24 +864,28 @@ export default function App() {
                   </div>
                   <span className="eyebrow">HERE’S TO THE NEXT CHAPTER</span>
                   <h1 ref={headingRef} tabIndex={-1}>
-                    Your demo journey is ready.
+                    Your ride request is received.
                   </h1>
                   <p>
-                    Thanks, {passenger.name.trim().split(" ")[0]}. That’s how
-                    easy planning a ride can feel.
+                    Thanks, {passenger.name.trim().split(" ")[0]}. Our team will
+                    check partner availability and agree the final fare with
+                    you.
                   </p>
                   <div className="confirmation-notice">
                     <Info size={18} />
-                    <strong>{brand.demoNotice}</strong>
+                    <strong>
+                      Your request is pending. No cab is reserved until our team
+                      confirms.
+                    </strong>
                   </div>
                   <div className="confirmation-ticket">
                     <div className="ticket-top">
                       <Logo onClick={() => goHome()} />
-                      <span>SIMULATED CONFIRMATION</span>
+                      <span>AWAITING TEAM REVIEW</span>
                     </div>
                     <div className="reference-row">
                       <div>
-                        <small>Demo booking reference</small>
+                        <small>Ride request reference</small>
                         <strong>{confirmation}</strong>
                       </div>
                       <span className="mode-pill">
@@ -840,13 +922,43 @@ export default function App() {
                     </div>
                   </div>
                   <p className="confirmation-footnote">
-                    No driver has been assigned. No messages have been sent.
-                    <br />
-                    Your sample details will clear when you start again or
-                    refresh.
+                    Save your private status link to check progress and see your
+                    assigned driver after confirmation. Keep it private: anyone
+                    with the link can view this journey’s status.
                   </p>
-                  <button className="button primary" onClick={reset}>
-                    Start a New Booking
+                  <div className="receipt-actions">
+                    <a
+                      className="button primary"
+                      href={trackingUrl(
+                        confirmation,
+                        requestIdentity.current.trackingToken,
+                      )}
+                    >
+                      View request status <ArrowRight size={16} />
+                    </a>
+                    <button
+                      className="button secondary"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(
+                            trackingUrl(
+                              confirmation,
+                              requestIdentity.current.trackingToken,
+                            ),
+                          );
+                          setCopied(true);
+                        } catch {
+                          setCopied(false);
+                        }
+                      }}
+                    >
+                      {copied
+                        ? "Private link copied"
+                        : "Copy private status link"}
+                    </button>
+                  </div>
+                  <button className="text-button" onClick={reset}>
+                    Request another ride
                     <ArrowRight size={18} />
                   </button>
                 </div>

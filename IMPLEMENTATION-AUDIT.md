@@ -1,54 +1,25 @@
-# JourneyCab implementation audit
+# JourneyCab implementation status — 13 October 2026
 
-Reviewed 12 October 2026 against the original pasted brief and updated for the Bihar-only request. Current Bihar behavior was verified locally; the earlier baseline audit also inspected the deployed website.
+The first-release workflow requested by the owner is implemented locally: **customer request → manual fare approval → local partner assignment → team confirmation → customer status update and notification queue**.
 
-**Verdict: The complete client-demo journey works with Bihar-only coverage. The keyboard selector issue is resolved. Some configurable fare labels still need cleanup, and the Bihar update cannot yet be published because Sites access is unavailable.**
+| Area                     | Current implementation                                                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Bihar customer interface | Existing responsive design, 12 cities, six featured intercity pairs and both local packages.                                                                                               |
+| Ride requests            | Persisted by a Node/SQLite API; no browser-only simulated confirmation. Initial fares remain illustrative until the operator supplies real rates.                                          |
+| Staff access             | Scrypt passwords, server-side sessions, protected admin API, same-origin writes, rate limits, logout and eight-hour expiry. No default credentials.                                        |
+| Dispatch                 | Fare and inclusions recorded after customer agreement; driver acceptance and active matching category required; overlapping assignments and stale updates rejected.                        |
+| Partner register         | Driver contact, Bihar base, vehicle category/model/registration, active/inactive status. Documentary verification is an operator responsibility.                                           |
+| Customer confirmation    | Private status page shows confirmed fare and assigned driver after staff approval. Random access key, hash stored server-side.                                                             |
+| Communications           | Durable SMS queue and optional Twilio adapter; manual contact records without credentials. Provider acceptance is not labelled delivered. Real delivery remains unconfigured and untested. |
+| Operations history       | Actor/action/note/time audit trail; cancellation/decline and trip completion.                                                                                                              |
+| Recovery                 | Persistent SQLite storage, backup management command and tested backup restoration. Scheduled encrypted off-host backups need hosting setup.                                               |
+| Verification             | 25 automated tests, TypeScript/build checks, complete browser workflow and mobile/tablet/desktop checks. See VERIFICATION.md for exact limits.                                             |
+| Deployment               | Node/container files and setup guide included. Production request intake defaults closed. No production deployment performed.                                                              |
 
-## Requirement checklist
+## What still needs the owner or production infrastructure
 
-| Requirement | Status | Evidence / limits |
-| --- | --- | --- |
-| Original JourneyCab branding and premium visual design | Implemented | Warm ivory, navy, saffron actions, local Manrope font, original copy and layout. |
-| Desktop and mobile hero with prominent booking panel | Implemented | Mobile prioritises headline and booking form before hero imagery. |
-| Header navigation, mobile menu and booking action | Implemented | Links/buttons navigate to the relevant section or booking form. |
-| One Way, Round Trip and Local modes | Implemented | All three completed end to end on the local Bihar build. |
-| Searchable city selectors, swap, date/time, return date and local packages | Implemented | Fields and selection work; active keyboard option now scrolls into view. |
-| Four benefits, six popular routes and route prefilling | Implemented | Six Bihar routes from Patna, their reverses, and clearly labelled estimates. |
-| Four fleet categories with images, seats, bags, AC and representative models | Implemented | Licensed local assets and an image-credit dialog. |
-| How booking works, sample testimonials, FAQs and footer | Implemented | Sample stories and draft policies are explicitly labelled. |
-| Editable results, category/capacity filters and price sorting | Implemented | Includes supported-route and filter empty states. |
-| Deterministic fare breakdown | Implemented | Base + tax + toll estimate + driver allowance equals total. Thirteen automated tests pass, including Bihar coverage and out-of-state rejection. |
-| Inclusions, exclusions and cancellation preview | Implemented | Accessible dialog; provider confirmation still required for real policies. |
-| Passenger information, addresses, validation and final review | Implemented | Local requires pickup only; email optional. |
-| Generated demo reference, confirmation notice and restart | Implemented | Fresh local Bihar checks completed for each mode; reset clears details. |
-| Preserve selections when using in-app Back/Edit | Implemented | Previously tested throughout review/results navigation. |
-| Missing fields, identical cities, past departure, invalid return date | Implemented | Unit and browser checks cover these cases. |
-| Loading, empty results and recoverable error | Implemented | Search delay and optional `?scenario=error` are deliberate demo scenarios. |
-| Passenger data in memory only, no payments or messages | Implemented | Source contains no booking network calls or persistent storage; prior network test confirmed no outbound booking requests. |
-| Reusable components and editable configuration | Mostly implemented | Config exists, but some fare labels and metadata remain separate from configuration; footer branding now uses config. |
-| Accessibility and reduced-motion support | Mostly implemented | Labels, focus states, native disclosure/dialog controls and contrast checks pass; keyboard city-list scrolling is now fixed and verified. |
-| Responsive verification | Implemented | 375, 768, 1024 and 1440px checked; no overflow or broken images found in the recorded browser suite. |
-| Working source, preview, README and presentation walkthrough | Delivered | See `journeycab/README.md`, `journeycab/VERIFICATION.md`, and `JourneyCab-source.zip`. |
+Real service pricing/hours and verified partners; operator identity, support contact and approved policies; a Node host/domain with a private persistent disk; live notification credentials and provider delivery validation; operational backup/monitoring setup; and a production security/load review. Details are in DEPLOYMENT.md.
 
-## Remaining issue
+This release uses one application instance and shows the latest 500 requests in the staff inbox. It does not implement payments, automated dispatch, GPS tracking, customer accounts/OTP, WhatsApp/email delivery, multi-role permissions or self-service staff password recovery. Rescheduling/reassignment currently requires closing the original request and creating a new one with the customer.
 
-**Configuration consistency:** `src/config.ts` holds fare rules, but the “Sample tax (5%)” label and some 250 km/₹300 explanatory text remain hard-coded in `Common.tsx` and `App.tsx`. Current numbers are correct. If the pricing configuration changes, align these labels too. Brand metadata in `index.html` is also maintained separately. Footer branding, default route and footer service cities now derive from configuration.
-
-## Bihar verification results
-
-- `npm test`: 13/13 passing; `npm run build`: TypeScript and production build passing.
-- Local Patna → Gaya Sedan one way: **₹1,465**, reached simulated confirmation.
-- Local Patna → Gaya Sedan round trip, three inclusive days: **₹11,383**, reached simulated confirmation.
-- Local Patna Sedan rental, 8 hours / 80 km: **₹2,728**, reached simulated confirmation.
-- Out-of-state cities are absent from selectors and rejected by validation and fare calculation.
-- Keyboard navigation keeps Arrah, the final option, visible inside the dropdown.
-- Route prefilling, unsupported-route recovery, Bihar image loading, and responsive widths 375/768/1440px were checked.
-- See `VERIFICATION.md` for the distinction between current checks and the earlier baseline suite.
-
-## Expected demo limitations
-
-Six featured intercity pairs and their reverse routes have mock pricing; local rentals work in all 12 listed Bihar cities. Interstate journeys are unavailable. Unsupported intercity pairs deliberately show an empty state. No actual bookings, fleet availability, payments, messages or driver assignment are included, as requested. Fares, capacities, durations and policies require client confirmation before real use. The hosted preview was created privately; client access is not automatically granted.
-
-## Hosting management limitation
-
-The existing hosted website remains the earlier nationwide demo. The Sites metadata lookup still returns `Sites project not found`, preventing publication of the Bihar update. The current Bihar source and GitHub repository are the authoritative implementation. Hosting access must be restored before the existing preview can be updated; no duplicate Site was created and the project identity was preserved.
+The old static Sites preview remains inaccessible to management (`Sites project not found`). It is not the current implementation. Do not publish the frontend bundle alone as the new service; its API requires the Node runtime described in DEPLOYMENT.md.
