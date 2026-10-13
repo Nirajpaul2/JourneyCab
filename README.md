@@ -40,7 +40,15 @@ This Compose file is **loopback-only local HTTP**, with no SMS credentials loade
 
 ## Staff setup
 
-There is no seeded/default account. See [DEPLOYMENT.md](DEPLOYMENT.md#create-and-manage-staff-accounts) to create a staff account securely using the management command, then sign in at `/admin`.
+There is no seeded/default account. With Docker running, create a staff account privately in your local terminal:
+
+```sh
+npm run admin:create
+```
+
+Enter your staff email, a 14–128 character password, and repeat the password. Password input is hidden and sent to the container through stdin; it is never included in command arguments or saved in a file. Sign in at `http://127.0.0.1:5173/admin`. The command creates an account in the same database as the running application and refuses to overwrite existing accounts.
+
+For non-Docker hosting, see [DEPLOYMENT.md](DEPLOYMENT.md#create-and-manage-staff-accounts) to create a staff account securely using the management command, then sign in at `/admin`.
 
 ## First-release workflow
 

@@ -13,7 +13,8 @@
     "start": "node --import tsx server/index.ts",
     "manage": "node --import tsx server/manage.ts",
     "docker": "node scripts/docker-local.mjs",
-    "docker:test": "node scripts/docker-smoke.mjs"
+    "docker:test": "node scripts/docker-smoke.mjs",
+    "admin:create": "bash scripts/create-admin.sh"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.0",
