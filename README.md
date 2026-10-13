@@ -87,3 +87,7 @@ Read [DEPLOYMENT.md](DEPLOYMENT.md) before going live. The server requires a sin
 The old Sites project continues to return `Sites project not found`; it has not been updated. The preserved hosting manifest identifies that historical static demo, not the new backend deployment.
 
 See [VERIFICATION.md](VERIFICATION.md) for test evidence and verification limits.
+
+## Cloudflare Worker and Tunnel
+
+See [CLOUDFLARE-DEPLOYMENT.md](CLOUDFLARE-DEPLOYMENT.md) for the public deployment. The `journeycab` Worker serves the frontend and forwards `/api/*` through `journeycab-api.nirajpaul.com` to the persistent Docker backend. Use the production Compose override for the HTTPS origin and secure staff sessions. This is a Workers deployment, not Pages.

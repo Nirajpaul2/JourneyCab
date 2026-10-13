@@ -9,3 +9,7 @@ qa
 .sites-runtime
 *.sqlite
 *.sqlite-*
+
+.wrangler
+.dev.vars
+.dev.vars.*

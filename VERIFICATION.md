@@ -47,3 +47,16 @@ No production host, real SMS credentials or domain/TLS configuration was availab
 The earlier static frontend had an axe accessibility audit. That audit does not cover the new operations, tracking and privacy pages; no full automated accessibility audit is claimed for these pages. Form labels, keyboard focus styling and responsive layouts are implemented.
 
 The previous Sites project returns `Sites project not found`. It has not received this server-backed release, and its static manifest is retained only as historical project identity. Production intake is closed by default until `BOOKINGS_OPEN=true` is explicitly set.
+
+## Cloudflare API repair — 13 October 2026
+
+- Cloudflare account inspection identified the public custom domain as the `journeycab` Worker, not Pages. Previously the public API returned the static HTML fallback, while local Docker returned JSON.
+- 30 tests passed: 23 existing application tests, 6 API proxy tests and one Worker route/asset isolation test. Proxy tests cover configuration validation, original Origin and cookie/Authorization forwarding, cross-origin rejection, backend errors, redirects/HTML/network failures and the 16 KiB request limit.
+- Frontend/backend TypeScript and Vite build, Wrangler deployment dry run and binding type generation succeeded. The deployed Worker startup time was 2 ms.
+- Backed up SQLite, switched only the JourneyCab container to production HTTPS settings and retained the persistent database. Customer intake remains closed. The container returned healthy after recreation.
+- Added `journeycab-api.nirajpaul.com` without DNS overwrite. Added its loopback service to `mac-home-server` and compared every other ingress entry against the saved configuration; all were preserved. No Supabase application/database changes were made.
+- Deployed Worker version `eb197dfb-4dc7-44f5-8bc6-bab613aa8141` with static frontend and same-origin API proxy. Existing public custom domain was preserved.
+- Live curl checks passed: `/api/health` 200 JSON, `/api/session` 200 JSON with no signed-in email, `/api/admin/bookings` 401 JSON, `/admin` 200 HTML. Untrusted-origin POST `/api/session` returned 403; an empty same-origin login reached backend validation and returned 400 JSON. No passwords or bookings were submitted.
+- Browser verification: the public HTTPS `/admin` page completed its session check and displayed the login form without the server-unavailable error. A real authenticated login was not performed; the user must enter their existing credentials privately.
+- One initial Python urllib probe returned text/plain 403; curl and the browser then passed. No security policy was weakened in response.
+- Service availability still requires an awake Mac, Docker Desktop and cloudflared. SMS delivery, sustained uptime and production load have not been verified. See `CLOUDFLARE-DEPLOYMENT.md` for operation and rollback details.

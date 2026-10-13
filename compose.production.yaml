@@ -1,0 +1,10 @@
+# Apply only after the tunnel route and public API configuration are verified:
+# npm run docker -- -f compose.yaml -f compose.production.yaml up -d --wait
+# Local HTTP login will no longer work: production session cookies require HTTPS.
+services:
+  app:
+    environment:
+      NODE_ENV: production
+      APP_ORIGIN: https://journeycab.nirajpaul.com
+      # Explicit launch gate. Admin login still works with intake closed.
+      BOOKINGS_OPEN: "${BOOKINGS_OPEN:-false}"

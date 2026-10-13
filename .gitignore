@@ -11,3 +11,7 @@ data/
 !.env.example
 *.sqlite
 *.sqlite-*
+
+.wrangler/
+.dev.vars
+.dev.vars.*
