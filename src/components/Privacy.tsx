@@ -1,10 +1,9 @@
+import BrandLogo from "./BrandLogo";
 export default function Privacy() {
   return (
     <div className="ops-page">
       <header className="ops-top">
-        <a className="ops-brand" href="/">
-          journeycab<span>.</span>
-        </a>
+        <BrandLogo />
       </header>
       <main className="tracking-content surface">
         <span className="eyebrow">YOUR DETAILS, YOUR JOURNEY</span>

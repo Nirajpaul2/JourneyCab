@@ -1,7 +1,6 @@
 export const brand = {
-  name: "JourneyCab",
-  wordmark: ["journey", "cab"],
-  tagline: "Enjoy the journey.",
+  name: "Aryan Tour and Travel",
+  tagline: "आपकी यात्रा, हमारी जिम्मेदारी।",
   requestNotice: "Your request is pending team confirmation.",
 };
 export type TripMode = "oneway" | "roundtrip" | "local";
@@ -137,7 +136,7 @@ export const faqs = [
     a: "After you submit a ride request, our team checks availability with local driver partners and agrees the final fare with you. We then assign a driver and confirm your booking. Follow your private status link for updates; a submitted request alone does not reserve a cab.",
   },
   {
-    q: "Where is JourneyCab available?",
+    q: "Where is Aryan Tour and Travel available?",
     a: `We list ${routes.length} advertised one-way routes across Bihar and selected routes from Siwan and Maharajganj to Uttar Pradesh. Varanasi and Gorakhpur are supported only on the published routes. Prices apply in the direction shown; reverse trips and other city pairs need a separate quote.`,
   },
   {

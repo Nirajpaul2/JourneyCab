@@ -1,3 +1,4 @@
+import BrandLogo from "./BrandLogo";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -46,9 +47,7 @@ export default function Tracking() {
   return (
     <div className="ops-page track-page">
       <header className="ops-top">
-        <a className="ops-brand" href="/">
-          journeycab<span>.</span>
-        </a>
+        <BrandLogo />
         <span className="ops-top-label">
           <ShieldCheck size={16} /> Private booking status
         </span>

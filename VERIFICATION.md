@@ -82,3 +82,10 @@ The previous Sites project returns `Sites project not found`. It has not receive
 - Confirmed bookings now provide a recipient-specific WhatsApp confirmation draft and message preview. Drafts include route, pickup date/time/address, agreed fare/terms, assigned driver/vehicle and approved upgrade where applicable. Unconfirmed, cancelled, completed, incomplete and invalid-recipient bookings cannot generate confirmation links.
 - Creating or opening a link does not send a message or alter contact/delivery status. Staff must send in WhatsApp and separately record actual contact through the existing audited workflow. No real customer message was sent in testing.
 - All 34 tests and the TypeScript/Vite build passed. New tests cover correct recipient normalization, reserved-character URL encoding, confirmed-only eligibility, agreed details, exclusion of private staff metadata and no mutation of the booking when a draft is prepared.
+
+## Aryan logo and public branding — 14 October 2026
+
+- Created a transparent red/navy cab emblem from the client reference using the built-in image generator, with prompt and asset provenance in `BRAND-IDENTITY.md`.
+- Shared responsive BrandLogo component combines the emblem with accessible live English/Hindi text across the header, footer, receipt, operations, tracking and privacy pages. Updated the site icon, title and public business name. Future WhatsApp drafts and notification text use the configured business name; stored records were not rewritten.
+- All 34 tests and frontend/backend builds passed. Desktop browser inspection verified the logo and navigation layout; the viewport override did not take effect, so no mobile browser verification is claimed. Compact CSS layouts are implemented.
+- Rebuilt JourneyCab's container successfully with a healthy restart and deployed Worker version `450d86ec-9fa5-4723-86a9-b3e54b651a7d`. Verified the live homepage title, header and footer branding. Screenshot saved under ignored `qa/aryan-website.png`.

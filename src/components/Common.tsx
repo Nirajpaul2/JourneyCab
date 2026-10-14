@@ -1,3 +1,4 @@
+import Logo from "./BrandLogo";
 import {
   ArrowUpRight,
   Check,
@@ -17,40 +18,7 @@ import {
 import type { Category, Journey } from "../config";
 import { money, prettyDate, modeLabel } from "../booking";
 import type { Fare } from "../booking";
-export function Logo({
-  onClick,
-  light = false,
-}: {
-  onClick: () => void;
-  light?: boolean;
-}) {
-  return (
-    <button
-      className={`logo ${light ? "light" : ""}`}
-      onClick={onClick}
-      aria-label={`${brand.name} home`}
-    >
-      <span className="brand-symbol">
-        <svg viewBox="0 0 32 32" aria-hidden="true">
-          <path
-            d="m8 24 8-17 8 17M11 18h10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path d="M16 11v3m0 8v3" stroke="#fff" strokeWidth="1.5" />
-        </svg>
-      </span>
-      <span>
-        {brand.wordmark[0]}
-        <span className="logo-light">{brand.wordmark[1]}</span>
-        <i />
-      </span>
-    </button>
-  );
-}
+export { default as Logo } from "./BrandLogo";
 export function SectionHeading({
   eyebrow,
   title,

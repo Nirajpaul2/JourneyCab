@@ -14,7 +14,7 @@ import {
   validateJourney,
   validatePassenger,
 } from "../src/booking";
-import { cities, fleet } from "../src/config";
+import { brand, cities, fleet } from "../src/config";
 import type { Category, Journey, Passenger } from "../src/config";
 import type {
   Booking,
@@ -544,8 +544,8 @@ export class Store {
           .run(reference);
         const body =
           b.status === "confirmed"
-            ? `JourneyCab ${reference}: confirmed. ${b.journey.from}${b.journey.to ? " to " + b.journey.to : " local"}, ${b.journey.date} ${b.journey.time} IST. Fare INR ${b.finalFare}. Driver ${b.driver!.name}, ${b.driver!.phone}, ${b.driver!.vehicle}, ${b.driver!.plate}.`
-            : `JourneyCab ${reference}: ${b.status === "rejected" ? "we are unable to fulfil your ride request" : "your booking is cancelled"}. Please check your private status page or contact the booking team.`;
+            ? `${brand.name} ${reference}: confirmed. ${b.journey.from}${b.journey.to ? " to " + b.journey.to : " local"}, ${b.journey.date} ${b.journey.time} IST. Fare INR ${b.finalFare}. Driver ${b.driver!.name}, ${b.driver!.phone}, ${b.driver!.vehicle}, ${b.driver!.plate}.`
+            : `${brand.name} ${reference}: ${b.status === "rejected" ? "we are unable to fulfil your ride request" : "your booking is cancelled"}. Please check your private status page or contact the booking team.`;
         this.db
           .prepare(
             "INSERT INTO notifications(booking_ref,status,body,created_at) VALUES(?,'pending',?,?)",

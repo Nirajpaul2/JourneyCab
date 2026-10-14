@@ -1,0 +1,43 @@
+.aryan-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+  width: max-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-decoration: none;
+  text-align: left;
+  line-height: 1;
+  color: #102c59;
+}
+.aryan-emblem {
+  display: grid;
+  place-items: center;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+}
+.aryan-emblem img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.aryan-wordmark { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.aryan-name { color: #ce2034; font-size: 31px; font-weight: 800; letter-spacing: 2.5px; }
+.aryan-descriptor { font-size: 9px; font-weight: 800; letter-spacing: 1.65px; white-space: nowrap; }
+.aryan-promise { margin-top: 2px; color: #617087; font-size: 10px; line-height: 1.35; font-weight: 500; white-space: nowrap; }
+.aryan-logo-light .aryan-name { color: #ff6775; }
+.aryan-logo-light .aryan-descriptor { color: #fff; }
+.aryan-logo-light .aryan-promise { color: #c7d1df; }
+.aryan-logo-light .aryan-emblem { background: #fff; border-radius: 50%; padding: 4px; }
+.ticket-top .aryan-emblem { width: 54px; height: 54px; flex-basis: 54px; }
+.ticket-top .aryan-name { font-size: 27px; }
+@media (max-width: 600px) {
+  .aryan-logo { gap: 7px; }
+  .aryan-emblem { width: 48px; height: 48px; flex-basis: 48px; }
+  .aryan-name { font-size: 24px; letter-spacing: 1.8px; }
+  .aryan-descriptor { font-size: 7px; letter-spacing: 1px; }
+  .aryan-promise { font-size: 8px; margin-top: 0; }
+  .aryan-wordmark { gap: 3px; }
+  .header .header-book { display: none; }
+  .ops-top { flex-wrap: wrap; gap: 16px; }
+  .ops-account { flex-wrap: wrap; gap: 10px; }
+}

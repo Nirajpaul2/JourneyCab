@@ -1,3 +1,4 @@
+import { brand } from "./config";
 import type { Booking } from "./operations-types";
 import { money, prettyDate } from "./booking";
 
@@ -11,7 +12,7 @@ export function whatsappConfirmation(booking: Booking) {
   const driver = booking.driver;
   const message = [
     `Hello ${booking.passenger.name},`,
-    "Your JourneyCab ride is confirmed.",
+    `Your ${brand.name} ride is confirmed.`,
     `Booking: ${booking.reference}`,
     `Route: ${booking.journey.from} → ${booking.journey.to || "Local rental"}`,
     `Pickup time: ${prettyDate(booking.journey.date)}, ${booking.journey.time} IST`,
@@ -24,7 +25,7 @@ export function whatsappConfirmation(booking: Booking) {
     `Driver phone: +91 ${driver.phone}`,
     `Vehicle: ${driver.vehicle} · ${driver.plate}`,
     "Check booking status using the private link saved on your ride-request receipt.",
-    "Thank you for choosing JourneyCab.",
+    `Thank you for choosing ${brand.name}.`,
   ].join("\n");
   return { phone, message, url: `https://wa.me/${phone}?text=${encodeURIComponent(message)}` };
 }

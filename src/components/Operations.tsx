@@ -1,3 +1,4 @@
+import BrandLogo from "./BrandLogo";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -102,9 +103,7 @@ export default function Operations() {
   return (
     <div className="ops-page">
       <header className="ops-top">
-        <a className="ops-brand" href="/">
-          journeycab<span>.</span>
-        </a>
+        <BrandLogo />
         <span className="ops-top-label">
           <ShieldCheck size={16} /> Operations desk
         </span>
