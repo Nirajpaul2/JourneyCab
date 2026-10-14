@@ -209,6 +209,9 @@ export default function Tracking() {
                     {booking.driver ? (
                       <>
                         <h3>{booking.driver.name}</h3>
+                        {booking.category === "hatchback" && booking.driver.category === "sedan" && (
+                          <p>Customer-approved Sedan upgrade · agreed fare unchanged.</p>
+                        )}
                         <p>
                           {booking.driver.vehicle} · {booking.driver.plate}
                         </p>

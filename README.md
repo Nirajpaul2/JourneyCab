@@ -55,7 +55,7 @@ For non-Docker hosting, see [DEPLOYMENT.md](DEPLOYMENT.md#create-and-manage-staf
 1. Customer chooses a published one-way route and five-seater AC car category, enters contact and address details, and requests a ride.
 2. The API saves a **pending request**, returning a reference and private status link. No automatic reservation or payment occurs.
 3. Staff confirms availability with partner drivers, agrees the fare with the customer and records its inclusions.
-4. Staff assigns an active driver in the requested category; overlapping bookings are rejected.
+4. Staff assigns an active driver in the requested category. Hatchback bookings also allow a Sedan upgrade after staff records customer approval at the unchanged agreed fare. Driver acceptance is required and overlapping bookings are rejected.
 5. Staff confirms the booking. The customer status page displays the agreed fare and assigned driver. A persistent notification is queued.
 6. With configured SMS credentials, the server submits the message to the provider. Without them, staff contacts the customer manually and records the outcome. SMS acceptance is distinct from delivery.
 

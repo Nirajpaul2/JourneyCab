@@ -1,5 +1,9 @@
 import type { Category, Journey, Passenger } from "./config";
 import type { Fare } from "./booking";
+export const isSedanUpgrade = (requested: Category, assigned: Category) =>
+  requested === "hatchback" && assigned === "sedan";
+export const canAssignCategory = (requested: Category, assigned: Category) =>
+  requested === assigned || isSedanUpgrade(requested, assigned);
 export type BookingStatus =
   | "requested"
   | "quoted"
@@ -37,6 +41,12 @@ export interface Booking {
   finalFare: number | null;
   fareNote: string;
   driver: Driver | null;
+  upgradeApproval?: {
+    from: "hatchback";
+    to: "sedan";
+    recordedBy: string;
+    recordedAt: string;
+  };
   version: number;
   createdAt: string;
   updatedAt: string;
@@ -65,6 +75,6 @@ export interface PublicBooking {
   estimate: Fare;
   finalFare: number | null;
   fareNote: string;
-  driver: Pick<Driver, "name" | "phone" | "vehicle" | "plate"> | null;
+  driver: Pick<Driver, "name" | "phone" | "vehicle" | "plate" | "category"> | null;
   updatedAt: string;
 }

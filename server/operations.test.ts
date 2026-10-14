@@ -267,6 +267,70 @@ test("Driver collisions are blocked, category must match, cancellation releases 
     s.close();
   }
 });
+test("Hatchback to Sedan upgrade requires explicit approval and preserves fare, request and audit", () => {
+  const s = new Store(":memory:");
+  try {
+    const input = { ...sample(), category: "hatchback" };
+    const { reference } = s.create(input);
+    const d = s.addDriver(partner);
+    transition(s, reference, { action: "quote", fare: 2299, note: "Customer agreed to fare.", customerAgreed: true });
+    const assign = { action: "assign", driverId: d.id, driverAgreed: true };
+    for (const approval of [undefined, false, "true", 1]) {
+      assert.throws(() => transition(s, reference, { ...assign, customerApprovedUpgrade: approval }), /customer approved the Sedan upgrade/);
+      assert.equal(s.get(reference).status, "quoted");
+      assert.equal(s.get(reference).version, 2);
+    }
+    assert.throws(() => transition(s, reference, { ...assign, driverAgreed: false, customerApprovedUpgrade: true }), /driver accepted/);
+    transition(s, reference, { ...assign, customerApprovedUpgrade: true, fare: 9999 });
+    const stored = s.get(reference);
+    assert.equal(stored.category, "hatchback");
+    assert.equal(stored.driver?.category, "sedan");
+    assert.equal(stored.finalFare, 2299);
+    assert.deepEqual({ ...stored.upgradeApproval, recordedAt: "timestamp" }, {
+      from: "hatchback", to: "sedan", recordedBy: staff, recordedAt: "timestamp",
+    });
+    assert.ok(Number.isFinite(Date.parse(stored.upgradeApproval!.recordedAt)));
+    assert.match(String(s.detail(reference).events.at(-1)?.note), /Customer approved Hatchback → Sedan upgrade/);
+    assert.equal(s.publicGet(reference, input.trackingToken).driver, null);
+    transition(s, reference, { action: "confirm" });
+    const publicBooking = s.publicGet(reference, input.trackingToken);
+    assert.equal(publicBooking.category, "hatchback");
+    assert.equal(publicBooking.driver?.category, "sedan");
+    assert.equal(publicBooking.finalFare, 2299);
+    assert.equal("upgradeApproval" in publicBooking, false);
+  } finally { s.close(); }
+});
+
+test("Upgrade approval cannot bypass inactivity, collisions, downgrades or other categories", () => {
+  const s = new Store(":memory:");
+  try {
+    const quote = (category: string) => {
+      const { reference } = s.create({ ...sample(), category });
+      transition(s, reference, { action: "quote", fare: 2299, note: "Customer agreed to fare.", customerAgreed: true });
+      return reference;
+    };
+    const sedan = s.addDriver(partner);
+    const hatchback = s.addDriver({ ...partner, category: "hatchback", plate: "BR01AB2222" });
+    const suv = s.addDriver({ ...partner, category: "suv", plate: "BR01AB3333" });
+    const h = quote("hatchback");
+    const assign = (reference: string, driverId: string) => transition(s, reference, {
+      action: "assign", driverId, driverAgreed: true, customerApprovedUpgrade: true,
+    });
+    s.setDriverActive(sedan.id, false);
+    assert.throws(() => assign(h, sedan.id), /active partner/);
+    s.setDriverActive(sedan.id, true);
+    assert.throws(() => assign(h, suv.id), /category/);
+    const sedanBooking = quote("sedan");
+    assert.throws(() => assign(sedanBooking, hatchback.id), /category/);
+    assign(sedanBooking, sedan.id);
+    assert.equal(s.get(sedanBooking).upgradeApproval, undefined);
+    assert.throws(() => assign(h, sedan.id), /overlapping/);
+    assert.equal(s.get(h).upgradeApproval, undefined);
+    transition(s, h, { action: "assign", driverId: hatchback.id, driverAgreed: true });
+    assert.equal(s.get(h).upgradeApproval, undefined);
+  } finally { s.close(); }
+});
+
 test("The API accepts advertised UP routes and rejects unpriced services", () => {
   const s = new Store(":memory:");
   try {

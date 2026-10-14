@@ -66,3 +66,12 @@ The previous Sites project returns `Sites project not found`. It has not receive
 - Read-only category checks found the quoted booking requested a hatchback, while the two active driver records were sedans. The exact-category rule correctly excluded them; no driver or booking records were changed.
 - The admin form now names the requested category, explains when no active matching driver exists, lists other registered active categories and offers a Driver partners shortcut. Assignment controls are disabled while no matching partner exists.
 - All 30 existing regression tests and the TypeScript/Vite production build passed. The backend category and conflict checks remain unchanged.
+
+## Customer-approved Sedan upgrade — 14 October 2026
+
+- Added Hatchback → Sedan as the only permitted category substitution. A strict customer-approval boolean is enforced server-side, alongside driver acceptance, active status, version checks and overlapping-booking protection. Requested category and agreed fare remain unchanged.
+- Approval metadata (staff identity/time) persists with the booking and an audit event records the upgrade. Private staff metadata is not returned by public tracking. Confirmed tracking identifies the assigned Sedan upgrade.
+- Admin options label Sedan upgrades and require a separate customer-approval checkbox. Changing the selected driver resets both approval and driver-acceptance checkboxes.
+- All 32 tests pass, including approval missing/false/nonboolean rejection, unchanged fare/category, saved audit metadata, public visibility only after confirmation, inactive/conflicting driver rejection, blocked downgrades/SUV substitutions and unchanged same-category assignments. TypeScript/Vite build passed.
+- Created a consistent private backup at ignored `data/backups/pre-sedan-upgrade-20261014.sqlite` before backend deployment. No real booking was assigned or confirmed during implementation.
+- Rebuilt and restarted only the JourneyCab container; health passed and runtime checks confirmed Hatchback → Sedan allowed, Sedan → Hatchback blocked, production mode and `BOOKINGS_OPEN=true` preserved. Published frontend Worker version `15a48211-42f3-43d7-8e04-b9a6451e24a1`.

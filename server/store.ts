@@ -22,6 +22,7 @@ import type {
   PublicBooking,
   Notification,
 } from "../src/operations-types";
+import { canAssignCategory, isSedanUpgrade } from "../src/operations-types";
 const scrypt = promisify(scryptCallback);
 export const hash = (value: string) =>
   createHash("sha256").update(value).digest("hex");
@@ -240,6 +241,7 @@ export class Store {
             phone: b.driver.phone,
             vehicle: b.driver.vehicle,
             plate: b.driver.plate,
+            category: b.driver.category,
           }
         : null;
     return {
@@ -407,7 +409,7 @@ export class Store {
   change(reference: string, input: unknown, actor: string) {
     const data = object(input);
     const action = str(data.action, 30);
-    const note = str(data.note ?? "", 600, 0);
+    let note = str(data.note ?? "", 600, 0);
     return this.transaction(() => {
       const b = this.get(reference);
       requireThat(
@@ -449,8 +451,13 @@ export class Store {
         );
         const driver = this.drivers().find((d) => d.id === data.driverId);
         requireThat(
-          driver?.active && driver.category === b.category,
-          "Choose an active partner with the requested vehicle category.",
+          driver?.active && canAssignCategory(b.category, driver.category),
+          "Choose an active partner with a matching category or a Sedan upgrade for a Hatchback booking.",
+        );
+        const upgrade = isSedanUpgrade(b.category, driver.category);
+        requireThat(
+          !upgrade || data.customerApprovedUpgrade === true,
+          "Confirm the customer approved the Sedan upgrade at the agreed fare.",
         );
         requireThat(
           data.driverAgreed === true,
@@ -469,6 +476,13 @@ export class Store {
           409,
         );
         b.driver = driver;
+        if (upgrade) {
+          b.upgradeApproval = {
+            from: "hatchback", to: "sedan",
+            recordedBy: actor, recordedAt: new Date().toISOString(),
+          };
+          note = "Customer approved Hatchback → Sedan upgrade at the unchanged agreed fare." + (note ? ` ${note}` : "");
+        }
         b.status = "assigned";
       } else if (action === "confirm") {
         requireThat(

@@ -14,7 +14,7 @@ import {
 import { api } from "../api";
 import { cities, fleet, packages } from "../config";
 import { money, prettyDate } from "../booking";
-import { statusLabels } from "../operations-types";
+import { statusLabels, canAssignCategory, isSedanUpgrade } from "../operations-types";
 import type {
   Booking,
   BookingEvent,
@@ -526,8 +526,11 @@ function BookingDetail({
 }) {
   const b = detail.booking;
   const categoryLabel = fleet.find((c) => c.id === b.category)?.title ?? b.category;
-  const eligibleDrivers = drivers.filter((d) => d.active && d.category === b.category);
-  const otherActiveCategories = [...new Set(drivers.filter((d) => d.active && d.category !== b.category).map((d) =>
+  const eligibleDrivers = drivers.filter((d) => d.active && canAssignCategory(b.category, d.category));
+  const [selectedDriverId, setSelectedDriverId] = useState("");
+  const selectedDriver = eligibleDrivers.find((d) => d.id === selectedDriverId);
+  const upgradeSelected = selectedDriver && isSedanUpgrade(b.category, selectedDriver.category);
+  const otherActiveCategories = [...new Set(drivers.filter((d) => d.active && !canAssignCategory(b.category, d.category)).map((d) =>
     fleet.find((c) => c.id === d.category)?.title ?? d.category,
   ))];
   const [closing, setClosing] = useState(false);
@@ -643,20 +646,22 @@ function BookingDetail({
               action: "assign",
               driverId: f.get("driver"),
               driverAgreed: f.get("agreed") === "on",
+              customerApprovedUpgrade: f.get("upgradeApproved") === "on",
             });
           }}
         >
           <h3>02 · Assign a partner</h3>
           <p>
-            Requested vehicle: <strong>{categoryLabel}</strong>. Only active partners in this category are shown.
+            Requested vehicle: <strong>{categoryLabel}</strong>. Active partners in this category are shown.
+            {b.category === "hatchback" && " Sedan partners are also available as an upgrade with customer approval at the agreed fare."}
             Conflicting bookings are blocked.
           </p>
           {!eligibleDrivers.length && (
             <div className="ops-note" role="status">
               <p>
-                No active {categoryLabel} driver is registered.
+                No eligible active driver is registered for this {categoryLabel} booking.
                 {otherActiveCategories.length > 0 && ` Your active partners are registered under: ${otherActiveCategories.join(", ")}.`}
-                {" "}Add a verified {categoryLabel} partner or reactivate an existing one with this category.
+                {" "}Add or reactivate a verified {categoryLabel}{b.category === "hatchback" ? " or Sedan" : ""} partner.
               </p>
               <button type="button" className="text-button" onClick={manageDrivers}>
                 <Users size={16} /> Open Driver partners
@@ -665,19 +670,26 @@ function BookingDetail({
           )}
           <label className="ops-field">
             Driver partner
-            <select name="driver" required defaultValue="" disabled={!eligibleDrivers.length || busy}>
+            <select name="driver" required value={selectedDriverId} onChange={(e) => setSelectedDriverId(e.target.value)} disabled={!eligibleDrivers.length || busy}>
               <option value="" disabled>
-                {eligibleDrivers.length ? "Select a driver" : `No active ${categoryLabel} drivers`}
+                {eligibleDrivers.length ? "Select a driver" : "No eligible active drivers"}
               </option>
               {eligibleDrivers.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name} · {d.vehicle} · {d.plate}
+                    {isSedanUpgrade(b.category, d.category) ? " · Sedan upgrade — customer approval required" : ""}
                   </option>
                 ))}
             </select>
           </label>
+          {upgradeSelected && (
+            <label className="ops-check" key={selectedDriverId}>
+              <input type="checkbox" name="upgradeApproved" required disabled={busy} />
+              Customer approved upgrading from Hatchback to Sedan at the unchanged agreed fare of {money(b.finalFare!)}.
+            </label>
+          )}
           <label className="ops-check">
-            <input type="checkbox" name="agreed" required disabled={!eligibleDrivers.length || busy} /> Driver accepted
+            <input key={selectedDriverId} type="checkbox" name="agreed" required disabled={!eligibleDrivers.length || busy} /> Driver accepted
             this journey and pickup time.
           </label>
           <button className="button primary" disabled={busy || !eligibleDrivers.length}>
@@ -694,6 +706,7 @@ function BookingDetail({
             <p>
               {b.driver.vehicle} · {b.driver.plate} · {b.driver.phone}
             </p>
+            {b.upgradeApproval && <p>Customer-approved Hatchback → Sedan upgrade · agreed fare unchanged.</p>}
           </div>
         </div>
       )}
