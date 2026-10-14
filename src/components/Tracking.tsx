@@ -75,7 +75,7 @@ export default function Tracking() {
             >
               <label className="ops-field">
                 Booking reference
-                <input name="reference" required placeholder="JC-…" />
+                <input name="reference" required placeholder="JC-…" defaultValue={reference} />
               </label>
               <label className="ops-field">
                 Private access key
@@ -83,6 +83,12 @@ export default function Tracking() {
               </label>
               <button className="button primary">View request</button>
             </form>
+            <p className="muted">
+              Your private link was shown on the request receipt. If you saved
+              it, open that link directly. A booking reference alone cannot
+              unlock the ride details. This page shows booking status, not live
+              vehicle location.
+            </p>
           </section>
         ) : (
           <>

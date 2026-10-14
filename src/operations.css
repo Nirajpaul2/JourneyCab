@@ -3,6 +3,10 @@
   background: #f5f6f2;
   color: #203032;
 }
+.ops-message-preview {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .ops-top {
   min-height: 82px;
   border-bottom: 1px solid #dee4db;

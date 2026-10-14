@@ -10,8 +10,10 @@ import {
   RefreshCw,
   ShieldCheck,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import { api } from "../api";
+import { whatsappConfirmation } from "../whatsapp";
 import { cities, fleet, packages } from "../config";
 import { money, prettyDate } from "../booking";
 import { statusLabels, canAssignCategory, isSedanUpgrade } from "../operations-types";
@@ -525,6 +527,7 @@ function BookingDetail({
   notify: (id: number, data: Record<string, unknown>) => void;
 }) {
   const b = detail.booking;
+  const whatsapp = whatsappConfirmation(b);
   const categoryLabel = fleet.find((c) => c.id === b.category)?.title ?? b.category;
   const eligibleDrivers = drivers.filter((d) => d.active && canAssignCategory(b.category, d.category));
   const [selectedDriverId, setSelectedDriverId] = useState("");
@@ -727,6 +730,32 @@ function BookingDetail({
             <Check size={16} />
           </button>
         </div>
+      )}
+      {b.status === "confirmed" && (
+        <section className="ops-action">
+          <h3>Send WhatsApp confirmation</h3>
+          {whatsapp ? (
+            <>
+              <p>
+                Send this booking’s confirmation to {b.passenger.name} at +{whatsapp.phone}.
+                Review the details, then press Send in WhatsApp.
+              </p>
+              <details>
+                <summary>Preview confirmation message</summary>
+                <p className="ops-message-preview">{whatsapp.message}</p>
+              </details>
+              <a className="button primary" href={whatsapp.url} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={18} /> Open WhatsApp confirmation
+              </a>
+              <p className="muted">
+                Opening WhatsApp does not send the message. After sending,
+                record the channel, time and outcome under Customer communication below.
+              </p>
+            </>
+          ) : (
+            <p role="alert">A valid customer mobile number, agreed fare and assigned driver are required to prepare this confirmation.</p>
+          )}
+        </section>
       )}
       {b.status === "confirmed" && (
         <div className="ops-action">

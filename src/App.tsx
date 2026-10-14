@@ -245,6 +245,7 @@ export default function App() {
                 {label}
               </button>
             ))}
+            <a href="/track">Track my ride</a>
           </nav>
           <div className="header-actions">
             <span className="demo-tag">TEAM CONFIRMED</span>

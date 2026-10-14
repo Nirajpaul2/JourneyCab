@@ -82,7 +82,7 @@ Images and font are bundled locally; preserve [ASSET_CREDITS.md](ASSET_CREDITS.m
 
 ## Deployment and limits
 
-Read [DEPLOYMENT.md](DEPLOYMENT.md) before going live. The server requires a single Node process and persistent disk; a static-only deployment is insufficient. No production infrastructure, SMS credentials, real driver records or staff credentials are included. Automatic dispatch, live tracking, payments, customer accounts/OTP, WhatsApp/email delivery and multi-role staff access are outside this release.
+Read [DEPLOYMENT.md](DEPLOYMENT.md) before going live. The server requires a single Node process and persistent disk; a static-only deployment is insufficient. No production infrastructure, SMS credentials, real driver records or staff credentials are included. Automatic dispatch, live tracking, payments, customer accounts/OTP, automated WhatsApp/email delivery and multi-role staff access are outside this release.
 
 The old Sites project continues to return `Sites project not found`; it has not been updated. The preserved hosting manifest identifies that historical static demo, not the new backend deployment.
 
@@ -91,3 +91,9 @@ See [VERIFICATION.md](VERIFICATION.md) for test evidence and verification limits
 ## Cloudflare Worker and Tunnel
 
 See [CLOUDFLARE-DEPLOYMENT.md](CLOUDFLARE-DEPLOYMENT.md) for the public deployment. The `journeycab` Worker serves the frontend and forwards `/api/*` through `journeycab-api.nirajpaul.com` to the persistent Docker backend. Use the production Compose override for the HTTPS origin and secure staff sessions. This is a Workers deployment, not Pages.
+
+## Check a ride and send a WhatsApp confirmation
+
+Customers can open **Track my ride** in the main navigation or use the private status link from their request receipt. `/track` requires the booking reference and private access key; a reference alone does not grant access. Tracking shows booking progress and confirmed driver details, not live GPS location. Staff can inspect bookings through **Admin → Ride requests**.
+
+For each confirmed booking, **Open WhatsApp confirmation** opens a draft addressed to that customer. Review the message preview, send it from WhatsApp, then record channel, time and outcome under **Customer communication**. Opening the link does not send or record delivery. Automatic WhatsApp delivery is not configured.

@@ -75,3 +75,10 @@ The previous Sites project returns `Sites project not found`. It has not receive
 - All 32 tests pass, including approval missing/false/nonboolean rejection, unchanged fare/category, saved audit metadata, public visibility only after confirmation, inactive/conflicting driver rejection, blocked downgrades/SUV substitutions and unchanged same-category assignments. TypeScript/Vite build passed.
 - Created a consistent private backup at ignored `data/backups/pre-sedan-upgrade-20261014.sqlite` before backend deployment. No real booking was assigned or confirmed during implementation.
 - Rebuilt and restarted only the JourneyCab container; health passed and runtime checks confirmed Hatchback → Sedan allowed, Sedan → Hatchback blocked, production mode and `BOOKINGS_OPEN=true` preserved. Published frontend Worker version `15a48211-42f3-43d7-8e04-b9a6451e24a1`.
+
+## Ride tracking navigation and WhatsApp drafts — 14 October 2026
+
+- Added Track my ride to desktop/mobile navigation and explained private-link/access-key requirements on the tracking page. Status tracking does not imply live GPS tracking.
+- Confirmed bookings now provide a recipient-specific WhatsApp confirmation draft and message preview. Drafts include route, pickup date/time/address, agreed fare/terms, assigned driver/vehicle and approved upgrade where applicable. Unconfirmed, cancelled, completed, incomplete and invalid-recipient bookings cannot generate confirmation links.
+- Creating or opening a link does not send a message or alter contact/delivery status. Staff must send in WhatsApp and separately record actual contact through the existing audited workflow. No real customer message was sent in testing.
+- All 34 tests and the TypeScript/Vite build passed. New tests cover correct recipient normalization, reserved-character URL encoding, confirmed-only eligibility, agreed details, exclusion of private staff metadata and no mutation of the booking when a draft is prepared.

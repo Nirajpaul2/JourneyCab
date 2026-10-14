@@ -228,12 +228,14 @@ h1:focus {
   display: flex;
   gap: 28px;
 }
-.nav button {
+.nav button,
+.nav a {
   font-size: 12px;
   font-weight: 600;
   padding: 10px 0;
 }
-.nav button:hover {
+.nav button:hover,
+.nav a:hover {
   color: #606f59;
 }
 .header-actions {
@@ -2315,7 +2317,8 @@ footer {
   .nav {
     gap: 15px;
   }
-  .nav button {
+  .nav button,
+.nav a {
     font-size: 10px;
   }
   .header-inner {
@@ -2668,7 +2671,8 @@ footer {
     flex-direction: column;
     gap: 0;
   }
-  .nav button {
+  .nav button,
+.nav a {
     text-align: left;
     font-size: 12px;
     padding: 12px 0;
