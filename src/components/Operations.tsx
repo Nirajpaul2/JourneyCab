@@ -380,6 +380,7 @@ export default function Operations() {
                       busy={busy}
                       sms={sms}
                       action={action}
+                      manageDrivers={() => setTab("drivers")}
                       notify={(id, data) =>
                         void run(async () => {
                           await api(`/api/admin/notifications/${id}`, {
@@ -512,6 +513,7 @@ function BookingDetail({
   busy,
   sms,
   action,
+  manageDrivers,
   notify,
 }: {
   detail: Detail;
@@ -519,9 +521,15 @@ function BookingDetail({
   busy: boolean;
   sms: boolean;
   action: (data: Record<string, unknown>) => Promise<void>;
+  manageDrivers: () => void;
   notify: (id: number, data: Record<string, unknown>) => void;
 }) {
   const b = detail.booking;
+  const categoryLabel = fleet.find((c) => c.id === b.category)?.title ?? b.category;
+  const eligibleDrivers = drivers.filter((d) => d.active && d.category === b.category);
+  const otherActiveCategories = [...new Set(drivers.filter((d) => d.active && d.category !== b.category).map((d) =>
+    fleet.find((c) => c.id === d.category)?.title ?? d.category,
+  ))];
   const [closing, setClosing] = useState(false);
   const closed = ["completed", "cancelled", "rejected"].includes(b.status);
   return (
@@ -640,18 +648,28 @@ function BookingDetail({
         >
           <h3>02 · Assign a partner</h3>
           <p>
-            Only active partners in the requested category are shown.
+            Requested vehicle: <strong>{categoryLabel}</strong>. Only active partners in this category are shown.
             Conflicting bookings are blocked.
           </p>
+          {!eligibleDrivers.length && (
+            <div className="ops-note" role="status">
+              <p>
+                No active {categoryLabel} driver is registered.
+                {otherActiveCategories.length > 0 && ` Your active partners are registered under: ${otherActiveCategories.join(", ")}.`}
+                {" "}Add a verified {categoryLabel} partner or reactivate an existing one with this category.
+              </p>
+              <button type="button" className="text-button" onClick={manageDrivers}>
+                <Users size={16} /> Open Driver partners
+              </button>
+            </div>
+          )}
           <label className="ops-field">
             Driver partner
-            <select name="driver" required defaultValue="">
+            <select name="driver" required defaultValue="" disabled={!eligibleDrivers.length || busy}>
               <option value="" disabled>
-                Select a driver
+                {eligibleDrivers.length ? "Select a driver" : `No active ${categoryLabel} drivers`}
               </option>
-              {drivers
-                .filter((d) => d.active && d.category === b.category)
-                .map((d) => (
+              {eligibleDrivers.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name} · {d.vehicle} · {d.plate}
                   </option>
@@ -659,10 +677,10 @@ function BookingDetail({
             </select>
           </label>
           <label className="ops-check">
-            <input type="checkbox" name="agreed" required /> Driver accepted
+            <input type="checkbox" name="agreed" required disabled={!eligibleDrivers.length || busy} /> Driver accepted
             this journey and pickup time.
           </label>
-          <button className="button primary" disabled={busy}>
+          <button className="button primary" disabled={busy || !eligibleDrivers.length}>
             Assign driver
             <ArrowRight size={16} />
           </button>

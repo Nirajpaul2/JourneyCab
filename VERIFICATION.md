@@ -60,3 +60,9 @@ The previous Sites project returns `Sites project not found`. It has not receive
 - Browser verification: the public HTTPS `/admin` page completed its session check and displayed the login form without the server-unavailable error. A real authenticated login was not performed; the user must enter their existing credentials privately.
 - One initial Python urllib probe returned text/plain 403; curl and the browser then passed. No security policy was weakened in response.
 - Service availability still requires an awake Mac, Docker Desktop and cloudflared. SMS delivery, sustained uptime and production load have not been verified. See `CLOUDFLARE-DEPLOYMENT.md` for operation and rollback details.
+
+## Driver assignment empty state — 14 October 2026
+
+- Read-only category checks found the quoted booking requested a hatchback, while the two active driver records were sedans. The exact-category rule correctly excluded them; no driver or booking records were changed.
+- The admin form now names the requested category, explains when no active matching driver exists, lists other registered active categories and offers a Driver partners shortcut. Assignment controls are disabled while no matching partner exists.
+- All 30 existing regression tests and the TypeScript/Vite production build passed. The backend category and conflict checks remain unchanged.
